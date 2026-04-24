@@ -2,8 +2,7 @@ import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { apiClient, onApiEvent } from "@/sync/apiClient";
 import {
   clearToken,
-  getCachedUser,
-  getToken,
+  getAuthSnapshot,
   setCachedUser,
   setToken,
   subscribeAuth,
@@ -11,20 +10,10 @@ import {
 import type { ApiSuccess } from "@/types/api";
 import type { AuthResponse, User } from "@/types/user";
 
-type AuthSnapshot = {
-  token: string | null;
-  user: User | null;
-};
-
-function getSnapshot(): AuthSnapshot {
-  return {
-    token: getToken(),
-    user: getCachedUser() as User | null,
-  };
-}
-
 export function useAuth() {
-  const { token, user } = useSyncExternalStore(subscribeAuth, getSnapshot, getSnapshot);
+  const snapshot = useSyncExternalStore(subscribeAuth, getAuthSnapshot, getAuthSnapshot);
+  const token = snapshot.token;
+  const user = snapshot.user as User | null;
 
   useEffect(() => {
     // If we have a token but no cached user, fetch it.

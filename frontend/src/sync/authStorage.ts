@@ -4,6 +4,36 @@
 const TOKEN_KEY = "trak.auth.token";
 const USER_KEY = "trak.auth.user";
 
+export type AuthSnapshot = {
+  token: string | null;
+  user: unknown | null;
+};
+
+let cachedSnapshot: AuthSnapshot | null = null;
+
+function readCachedUser(): unknown | null {
+  const raw = localStorage.getItem(USER_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+// Stable snapshot getter for useSyncExternalStore. Must return the same
+// reference between calls as long as the underlying state hasn't changed,
+// or React will throw "The result of getSnapshot should be cached".
+export function getAuthSnapshot(): AuthSnapshot {
+  if (cachedSnapshot === null) {
+    cachedSnapshot = {
+      token: localStorage.getItem(TOKEN_KEY),
+      user: readCachedUser(),
+    };
+  }
+  return cachedSnapshot;
+}
+
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
@@ -20,13 +50,7 @@ export function clearToken(): void {
 }
 
 export function getCachedUser(): unknown | null {
-  const raw = localStorage.getItem(USER_KEY);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
+  return readCachedUser();
 }
 
 export function setCachedUser(user: unknown): void {
@@ -35,12 +59,12 @@ export function setCachedUser(user: unknown): void {
 }
 
 // --- Subscription ---
-// Emits whenever the token or cached user changes. Used by useAuth.
 
 type Listener = () => void;
 const listeners = new Set<Listener>();
 
 function emitChange() {
+  cachedSnapshot = null;
   for (const cb of listeners) cb();
 }
 
