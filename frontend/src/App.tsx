@@ -8,6 +8,9 @@ import { SessionsListPage } from "@/routes/sessions/SessionsListPage";
 import { RoutinesListPage } from "@/routes/routines/RoutinesListPage";
 import { ProgressPage } from "@/routes/progress/ProgressPage";
 import { BodyPage } from "@/routes/body/BodyPage";
+import { ExerciseListPage } from "@/routes/exercises/ExerciseListPage";
+import { ExerciseDetailPage } from "@/routes/exercises/ExerciseDetailPage";
+import { ExerciseFormPage } from "@/routes/exercises/ExerciseFormPage";
 
 function AppRoutes() {
   const navigate = useNavigate();
@@ -30,6 +33,10 @@ function AppRoutes() {
         <Route path="/routines" element={<RoutinesListPage />} />
         <Route path="/progress" element={<ProgressPage />} />
         <Route path="/body" element={<BodyPage />} />
+        <Route path="/exercises" element={<ExerciseListPage />} />
+        <Route path="/exercises/new" element={<ExerciseFormPage />} />
+        <Route path="/exercises/:id" element={<ExerciseDetailPage />} />
+        <Route path="/exercises/:id/edit" element={<ExerciseFormPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/sessions" replace />} />

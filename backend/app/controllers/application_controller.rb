@@ -3,12 +3,11 @@ class ApplicationController < ActionController::API
   # dynamic resolution (e.g., .constantize) to prevent unsafe reflection
   # (CWE-470) — only classes listed here can be used for authorization.
   POLICY_CLASSES = {
-    # "Exercise" => ExercisePolicy,
-    # ... registered as resources come online in later phases
+    "Exercise" => ExercisePolicy,
   }.freeze
 
   POLICY_SCOPE_CLASSES = {
-    # "Exercise" => ExercisePolicy::Scope,
+    "Exercise" => ExercisePolicy::Scope,
   }.freeze
 
   # Returns a policy instance for a record.
