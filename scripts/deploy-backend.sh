@@ -22,6 +22,9 @@ ssh "$REMOTE_HOST" bash -s <<EOF
   echo "==> Running migrations..."
   RAILS_ENV=production bin/rails db:migrate
 
+  echo "==> Seeding (idempotent)..."
+  RAILS_ENV=production bin/rails db:seed
+
   echo "==> Restarting server..."
   bin/rails restart
 
