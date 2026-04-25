@@ -11,6 +11,8 @@ Rails.application.routes.draw do
       resources :sessions, only: %i[index show update destroy]
       resources :session_exercises, only: %i[update destroy]
       resources :sets, only: %i[update destroy]
+      resources :routines, only: %i[index show update destroy]
+      resources :routine_exercises, only: %i[update destroy]
     end
   end
 end

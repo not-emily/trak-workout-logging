@@ -9,6 +9,7 @@
 export type Resource =
   | "exercises"
   | "routines"
+  | "routine_exercises"
   | "sessions"
   | "session_exercises"
   | "sets"

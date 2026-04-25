@@ -7,11 +7,14 @@ class ApplicationController < ActionController::API
     "Session" => SessionPolicy,
     "SessionExercise" => SessionExercisePolicy,
     "WorkoutSet" => WorkoutSetPolicy,
+    "Routine" => RoutinePolicy,
+    "RoutineExercise" => RoutineExercisePolicy,
   }.freeze
 
   POLICY_SCOPE_CLASSES = {
     "Exercise" => ExercisePolicy::Scope,
     "Session" => SessionPolicy::Scope,
+    "Routine" => RoutinePolicy::Scope,
   }.freeze
 
   # Returns a policy instance for a record.

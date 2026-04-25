@@ -8,6 +8,7 @@ import { SessionsListPage } from "@/routes/sessions/SessionsListPage";
 import { ActiveSessionPage } from "@/routes/sessions/ActiveSessionPage";
 import { RetroactiveSessionPage } from "@/routes/sessions/RetroactiveSessionPage";
 import { RoutinesListPage } from "@/routes/routines/RoutinesListPage";
+import { RoutineDetailPage } from "@/routes/routines/RoutineDetailPage";
 import { ProgressPage } from "@/routes/progress/ProgressPage";
 import { BodyPage } from "@/routes/body/BodyPage";
 import { ExerciseListPage } from "@/routes/exercises/ExerciseListPage";
@@ -35,6 +36,7 @@ function AppRoutes() {
         <Route path="/sessions/log-past" element={<RetroactiveSessionPage />} />
         <Route path="/sessions/:id" element={<ActiveSessionPage />} />
         <Route path="/routines" element={<RoutinesListPage />} />
+        <Route path="/routines/:id" element={<RoutineDetailPage />} />
         <Route path="/progress" element={<ProgressPage />} />
         <Route path="/body" element={<BodyPage />} />
         <Route path="/exercises" element={<ExerciseListPage />} />

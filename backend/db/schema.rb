@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_24_231922) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_25_031234) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -32,6 +32,34 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_24_231922) do
     t.index ["seed_slug"], name: "index_exercises_on_seed_slug", unique: true, where: "(seed_slug IS NOT NULL)"
     t.check_constraint "is_system = true AND owner_user_id IS NULL OR is_system = false AND owner_user_id IS NOT NULL", name: "exercises_ownership_check"
     t.check_constraint "kind::text = ANY (ARRAY['strength'::character varying::text, 'cardio'::character varying::text, 'bodyweight'::character varying::text])", name: "exercises_kind_check"
+  end
+
+  create_table "routine_exercises", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "exercise_id", null: false
+    t.text "notes"
+    t.decimal "planned_distance_meters", precision: 9, scale: 2
+    t.integer "planned_duration_seconds"
+    t.integer "planned_reps"
+    t.integer "planned_sets", default: 3, null: false
+    t.decimal "planned_weight_lb", precision: 7, scale: 2
+    t.integer "position", default: 0, null: false
+    t.uuid "routine_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exercise_id"], name: "index_routine_exercises_on_exercise_id"
+    t.index ["routine_id", "position"], name: "index_routine_exercises_on_routine_id_and_position"
+    t.index ["routine_id"], name: "index_routine_exercises_on_routine_id"
+  end
+
+  create_table "routines", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["user_id", "position"], name: "index_routines_on_user_id_and_position"
+    t.index ["user_id"], name: "index_routines_on_user_id"
   end
 
   create_table "session_exercises", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -88,6 +116,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_24_231922) do
   end
 
   add_foreign_key "exercises", "users", column: "owner_user_id"
+  add_foreign_key "routine_exercises", "exercises"
+  add_foreign_key "routine_exercises", "routines"
+  add_foreign_key "routines", "users"
   add_foreign_key "session_exercises", "exercises"
   add_foreign_key "session_exercises", "sessions"
   add_foreign_key "sessions", "users"

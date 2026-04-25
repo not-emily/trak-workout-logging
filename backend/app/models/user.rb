@@ -5,6 +5,7 @@ class User < ApplicationRecord
 
   has_many :exercises, foreign_key: :owner_user_id, dependent: :destroy, inverse_of: :owner_user
   has_many :sessions, dependent: :destroy
+  has_many :routines, dependent: :destroy
 
   before_validation :normalize_email
 
