@@ -11,24 +11,21 @@ export function ExerciseFormPage() {
   const navigate = useNavigate();
   const isNew = id === "new";
 
-  const { exercises, loading } = useExercises();
+  const { exercises } = useExercises();
   const existing = useMemo(
     () => (isNew ? null : exercises.find((e) => e.id === id) ?? null),
     [exercises, id, isNew]
   );
 
-  if (!isNew && !loading && !existing) {
-    return <Navigate to="/exercises" replace />;
-  }
-
   if (!isNew && existing?.isSystem) {
     return <Navigate to={`/exercises/${id}`} replace />;
   }
 
-  async function handleSubmit(input: ExerciseInput) {
+  function handleSubmit(input: ExerciseInput) {
     const targetId = isNew ? uuid() : id!;
-    await upsertExercise(targetId, input);
+    upsertExercise(targetId, input);
     navigate("/exercises", { replace: true });
+    return Promise.resolve();
   }
 
   return (
@@ -40,7 +37,6 @@ export function ExerciseFormPage() {
       <h1 className="text-2xl font-semibold">
         {isNew ? "New custom exercise" : "Edit exercise"}
       </h1>
-      {!isNew && loading && <p className="text-sm text-gray-500">Loading…</p>}
       {(isNew || existing) && (
         <ExerciseForm
           initial={

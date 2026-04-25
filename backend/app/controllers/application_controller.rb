@@ -4,10 +4,14 @@ class ApplicationController < ActionController::API
   # (CWE-470) — only classes listed here can be used for authorization.
   POLICY_CLASSES = {
     "Exercise" => ExercisePolicy,
+    "Session" => SessionPolicy,
+    "SessionExercise" => SessionExercisePolicy,
+    "WorkoutSet" => WorkoutSetPolicy,
   }.freeze
 
   POLICY_SCOPE_CLASSES = {
     "Exercise" => ExercisePolicy::Scope,
+    "Session" => SessionPolicy::Scope,
   }.freeze
 
   # Returns a policy instance for a record.

@@ -25,7 +25,9 @@ const springTransition = {
   damping: 30,
 };
 
-export function BottomNav() {
+type Props = { onActionPress: () => void };
+
+export function BottomNav({ onActionPress }: Props) {
   const { pathname } = useLocation();
   const activeItem = getActiveItem(pathname);
 
@@ -75,9 +77,7 @@ export function BottomNav() {
             layoutId="nav-action"
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100/90 shadow-sm backdrop-blur-sm"
             transition={springTransition}
-            onClick={() => {
-              // Phase 3 wires this up to the action menu
-            }}
+            onClick={onActionPress}
           >
             <Plus className="h-5 w-5 text-gray-500" />
           </motion.button>

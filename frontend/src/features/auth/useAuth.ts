@@ -7,6 +7,7 @@ import {
   setToken,
   subscribeAuth,
 } from "@/sync/authStorage";
+import { syncWorker } from "@/sync/syncWorker";
 import type { ApiSuccess } from "@/types/api";
 import type { AuthResponse, User } from "@/types/user";
 
@@ -29,6 +30,7 @@ export function useAuth() {
     const body = (await apiClient.post("/api/v1/auth/login", { email, password })) as ApiSuccess<AuthResponse>;
     setToken(body.data.token);
     setCachedUser(body.data.user);
+    syncWorker.resume();
     return body.data.user;
   }, []);
 
@@ -36,6 +38,7 @@ export function useAuth() {
     const body = (await apiClient.post("/api/v1/auth/signup", { email, password, name })) as ApiSuccess<AuthResponse>;
     setToken(body.data.token);
     setCachedUser(body.data.user);
+    syncWorker.resume();
     return body.data.user;
   }, []);
 

@@ -8,6 +8,9 @@ Rails.application.routes.draw do
       get "auth/me", to: "auth#me"
 
       resources :exercises, only: %i[index update destroy]
+      resources :sessions, only: %i[index show update destroy]
+      resources :session_exercises, only: %i[update destroy]
+      resources :sets, only: %i[update destroy]
     end
   end
 end

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router";
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { deleteExercise, useExercises } from "@/features/exercise/useExercises";
@@ -7,28 +6,17 @@ import { formatMuscleGroup } from "@/lib/muscleGroups";
 export function ExerciseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { exercises, loading, refetch } = useExercises();
-  const [deleting, setDeleting] = useState(false);
-
-  if (loading) {
-    return <p className="p-4 text-sm text-gray-500">Loading…</p>;
-  }
+  const { exercises } = useExercises();
 
   const exercise = exercises.find((e) => e.id === id);
   if (!exercise) {
     return <Navigate to="/exercises" replace />;
   }
 
-  async function handleDelete() {
+  function handleDelete() {
     if (!confirm("Delete this exercise? This cannot be undone.")) return;
-    setDeleting(true);
-    try {
-      await deleteExercise(exercise!.id);
-      await refetch();
-      navigate("/exercises", { replace: true });
-    } finally {
-      setDeleting(false);
-    }
+    deleteExercise(exercise!.id);
+    navigate("/exercises", { replace: true });
   }
 
   const canEdit = !exercise.isSystem;
@@ -71,8 +59,7 @@ export function ExerciseDetailPage() {
             <button
               type="button"
               onClick={handleDelete}
-              disabled={deleting}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-red-50 text-red-600 disabled:opacity-60"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-red-50 text-red-600"
               aria-label="Delete"
             >
               <Trash2 className="h-4 w-4" />

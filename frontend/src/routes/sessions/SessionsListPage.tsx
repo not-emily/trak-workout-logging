@@ -1,13 +1,26 @@
-import { Link } from "react-router";
+import { useSessions } from "@/features/session/useSessions";
+import { SessionCard } from "@/components/sessions/SessionCard";
 
 export function SessionsListPage() {
+  const sessions = useSessions();
+
   return (
-    <div className="p-6">
+    <div className="flex flex-col gap-3 p-4">
       <h1 className="text-2xl font-semibold">Sessions</h1>
-      <p className="mt-2 text-sm text-gray-600">Your workouts will appear here.</p>
-      <Link to="/exercises" className="mt-4 inline-block text-sm text-blue-600 underline">
-        Browse exercise library →
-      </Link>
+
+      {sessions.length === 0 ? (
+        <p className="text-sm text-gray-500">
+          No sessions yet. Tap <span className="font-medium">+</span> to start your first one.
+        </p>
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {sessions.map((s) => (
+            <li key={s.id}>
+              <SessionCard session={s} />
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

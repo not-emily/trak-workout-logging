@@ -1,10 +1,15 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.tsx";
+import { checkAndMigrateSchema } from "@/sync/schema";
+import { syncWorker } from "@/sync/syncWorker";
 
-createRoot(document.getElementById('root')!).render(
+checkAndMigrateSchema();
+syncWorker.start();
+
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />
   </StrictMode>,
-)
+);

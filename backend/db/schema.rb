@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_24_224619) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_24_231922) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -31,7 +31,51 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_24_224619) do
     t.index ["owner_user_id"], name: "index_exercises_on_owner_user_id"
     t.index ["seed_slug"], name: "index_exercises_on_seed_slug", unique: true, where: "(seed_slug IS NOT NULL)"
     t.check_constraint "is_system = true AND owner_user_id IS NULL OR is_system = false AND owner_user_id IS NOT NULL", name: "exercises_ownership_check"
-    t.check_constraint "kind::text = ANY (ARRAY['strength'::character varying, 'cardio'::character varying, 'bodyweight'::character varying]::text[])", name: "exercises_kind_check"
+    t.check_constraint "kind::text = ANY (ARRAY['strength'::character varying::text, 'cardio'::character varying::text, 'bodyweight'::character varying::text])", name: "exercises_kind_check"
+  end
+
+  create_table "session_exercises", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "exercise_id", null: false
+    t.text "notes"
+    t.integer "position", default: 0, null: false
+    t.uuid "session_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exercise_id"], name: "index_session_exercises_on_exercise_id"
+    t.index ["session_id", "position"], name: "index_session_exercises_on_session_id_and_position"
+    t.index ["session_id"], name: "index_session_exercises_on_session_id"
+  end
+
+  create_table "sessions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "ended_at"
+    t.string "name"
+    t.text "notes"
+    t.uuid "routine_id"
+    t.datetime "started_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["routine_id"], name: "index_sessions_on_routine_id"
+    t.index ["user_id", "started_at"], name: "index_sessions_on_user_id_and_started_at"
+    t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "sets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.decimal "distance_meters", precision: 9, scale: 2
+    t.integer "duration_seconds"
+    t.boolean "is_warmup", default: false, null: false
+    t.text "notes"
+    t.integer "position", default: 0, null: false
+    t.integer "reps"
+    t.integer "rpe"
+    t.uuid "session_exercise_id", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "weight_lb", precision: 7, scale: 2
+    t.index ["session_exercise_id", "position"], name: "index_sets_on_session_exercise_id_and_position"
+    t.index ["session_exercise_id"], name: "index_sets_on_session_exercise_id"
+    t.check_constraint "rpe IS NULL OR rpe >= 1 AND rpe <= 10", name: "sets_rpe_range_check"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -44,4 +88,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_24_224619) do
   end
 
   add_foreign_key "exercises", "users", column: "owner_user_id"
+  add_foreign_key "session_exercises", "exercises"
+  add_foreign_key "session_exercises", "sessions"
+  add_foreign_key "sessions", "users"
+  add_foreign_key "sets", "session_exercises"
 end

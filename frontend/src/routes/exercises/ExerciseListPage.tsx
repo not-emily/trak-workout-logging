@@ -13,7 +13,7 @@ export function ExerciseListPage() {
   const [muscleGroup, setMuscleGroup] = useState<MuscleGroup | null>(null);
   const [query, setQuery] = useState("");
 
-  const { exercises, loading, error } = useExercises({
+  const { exercises } = useExercises({
     kind: kind ?? undefined,
     muscleGroup: muscleGroup ?? undefined,
   });
@@ -51,12 +51,9 @@ export function ExerciseListPage() {
       <KindFilter value={kind} onChange={setKind} />
       <MuscleGroupFilter value={muscleGroup} onChange={setMuscleGroup} />
 
-      {loading && <p className="text-sm text-gray-500">Loading exercises…</p>}
-      {error && <p className="text-sm text-red-600">{error}</p>}
-
-      {!loading && !error && filtered.length === 0 && (
+      {filtered.length === 0 && (
         <p className="text-sm text-gray-500">
-          {query ? "No exercises match your search." : "No exercises found."}
+          {query ? "No exercises match your search." : "No exercises yet — they'll appear shortly."}
         </p>
       )}
 

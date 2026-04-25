@@ -2,34 +2,38 @@
 
 ## Plan Files
 Roadmap: [plan.md](../docs/plan/plan.md)
-Current Phase: [phase-3.md](../docs/plan/phases/phase-3.md)
+Current Phase: [phase-4.md](../docs/plan/phases/phase-4.md)
 Latest Weekly Report: None
 
 Last Updated: 2026-04-24
 
 ## Current Focus
-Phase 2 (Exercise Library) is complete locally. 79 curated system exercises seeded, per-user custom exercises supported end-to-end, browser UI with search/kind/muscle-group filters working. Ready to deploy and start Phase 3 (Sync Layer + Session Logging), the MVP-delivering phase.
+Phase 3 (Sync Layer + Session Logging) is complete locally — the MVP. Local-first sync layer (localStore + queue + syncWorker), full session models/controllers/policies/tests on backend, active session UI with rest timer, session history with summary cards, retroactive logging, sync indicator. Ready to deploy and start Phase 4 (Routines).
 
 ## Active Tasks
-- [NEXT] Deploy Phase 2 to Mac: `git pull` + `RAILS_ENV=production bin/rails db:migrate db:seed` + frontend auto-deploys via Cloudflare Pages
-- [NEXT] Phase 3: Sync Layer + Session Logging — [phase-3.md](../docs/plan/phases/phase-3.md)
-  - ⏭ 3.1 Sync layer infrastructure (localStore, queue, syncWorker, online/offline, 401 handling)
-  - ⏭ 3.2 Backend models/controllers: sessions, session_exercises, sets (with Syncable upserts)
-  - ⏭ 3.3 Active session UI (start empty, add exercise, log sets, rest timer, finish)
-  - ⏭ 3.4 History + retroactive (session list, detail, edit, backdated logging)
+- [NEXT] Deploy Phase 3 to Mac via `./scripts/deploy-backend.sh`
+- [NEXT] Phase 4: Routines — [phase-4.md](../docs/plan/phases/phase-4.md)
+  - ⏭ Routine + RoutineExercise models + policies + controllers + tests
+  - ⏭ Frontend: routine list, builder (drag-reorder via @dnd-kit), planned-sets editor
+  - ⏭ "Start from routine" flow that materializes a session pre-filled with planned sets
+  - ⏭ ActionMenu surfaces user routines above empty/log-past
 
 ## Open Questions/Blockers
 None
 
 ## Completed This Week
-- **Phase 1: Foundation** — deployed end-to-end at https://trak.1bit2bit.dev
-- **Phase 2: Exercise Library**
-  - Exercise model: UUID PK, kind enum (strength/cardio/bodyweight), muscle_groups text[], instructions, equipment, level, seed_slug (unique where not null), is_system, owner_user_id, DB check constraints enforcing the ownership invariant (system XOR custom)
-  - Seed data: curated 79 exercises from yuhonas/free-exercise-db via `scripts/curate_exercises.rb` (reproducible). Vendored as `backend/lib/exercises_seed_data.json`. Kinds: 55 strength, 15 bodyweight, 9 cardio
-  - Idempotent `db/seeds.rb` upserts by seed_slug — safe to run every deploy
-  - ExercisePolicy + Scope: system exercises visible to all, custom only to owner, system exercises read-only (`:system_exercise_readonly` reason), unowned records return 404 via `:not_visible`
-  - Api::V1::ExercisesController: index (policy_scope + optional kind/muscle_group filters), update (PUT upsert forcing is_system=false + owner=current_user, even if client sends otherwise), destroy (policy-guarded). 15/15 controller tests passing; 30 total tests green
-  - Frontend types, useExercises/upsertExercise/deleteExercise hooks, ExerciseListPage (search + kind filter + muscle-group filter + New button), ExerciseDetailPage (with Edit/Delete for owned), ExerciseFormPage, ExerciseCard, KindFilter, MuscleGroupFilter, shared ExerciseForm component. Wired into router. Temporary links on Sessions/Routines placeholder pages for discoverability until Phase 3/4
+- **Phase 1: Foundation** — deployed at https://trak.1bit2bit.dev
+- **Phase 2: Exercise Library** — 79 seeded exercises, custom exercises, search/filter UI
+- **Phase 3: Sync Layer + Session Logging** (MVP)
+  - Backend: Session, SessionExercise, WorkoutSet (renamed to avoid Ruby's `Set` class clash) with UUID PKs, RPE check constraint, cascading destroy
+  - Backend policies + Scope (own?), 3 controllers using upsert-by-UUID with parent ownership checks, nested SessionSerializer for show. 23 new controller tests; 53 total green
+  - Frontend sync layer: `localStore` (stable array refs cached + invalidated on mutation), `queue` (append-only, FIFO drain, retryable/failed states), `syncWorker` (one-at-a-time drain, exponential backoff [1s/5s/30s/2m/10m], 401 → pause + re-auth), `schema` (cache invalidation on version bump), `useOnlineStatus` / `useSyncStatus` hooks, `SyncIndicator` banner (offline / syncing / sync-issues states)
+  - useExercises refactored to flow through localStore — exercises usable offline, including in the AddExerciseSheet during a live session
+  - Session feature: types, sessionActions (start, finish, delete, addExercise, removeExercise, addSet, completeSet, updateSet, removeSet, hydrate), useSession (assembled view of session + nested), useSessions, useActiveSession, useRestTimer
+  - Active session UI: ActiveSessionPage with editable name and live elapsed-time header, SessionExerciseBlock, SetRow with weight/reps/duration/distance inputs (dispatched by exercise.kind) + checkmark + delete, RestTimerBar (auto-starts on set check, ±15s adjust), AddExerciseSheet bottom-sheet picker
+  - Session history: SessionsListPage with reverse-chrono SessionCards summarizing date/duration/exercise count/set count/volume; in-progress badge for active sessions
+  - Delete session from ActiveSessionPage (active or finished)
+  - ActionMenuSheet wired to "+" satellite: "Start empty session" creates + navigates; "Log past workout" routes to RetroactiveSessionPage (date/time picker, optional name)
 
 ## Next Session
-Deploy Phase 2 to farley_station (pull + migrate + seed). Then start Phase 3.1: build the sync layer (`sync/localStore.ts`, `sync/queue.ts`, `sync/syncWorker.ts`). This is the biggest phase of the project and delivers the MVP (usable workout tracker, works offline).
+Deploy Phase 3 to Mac. Then start Phase 4.1: backend Routine + RoutineExercise models + policies + controllers + tests, mirroring the Phase 3 pattern but with planned values per exercise.
