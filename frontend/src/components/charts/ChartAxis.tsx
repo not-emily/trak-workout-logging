@@ -1,0 +1,51 @@
+type Props = {
+  chartW: number;
+  chartH: number;
+  yTicks: number[];
+  xTicks: { value: Date; x: number }[];
+  yToPx: (y: number) => number;
+  yFormatter?: (n: number) => string;
+  xFormatter?: (d: Date) => string;
+};
+
+export function ChartAxis({
+  chartW,
+  chartH,
+  yTicks,
+  xTicks,
+  yToPx,
+  yFormatter,
+  xFormatter,
+}: Props) {
+  const fmtY = yFormatter ?? ((n) => n.toLocaleString());
+  const fmtX = xFormatter ?? ((d) => d.toLocaleDateString(undefined, { month: "short", day: "numeric" }));
+
+  return (
+    <g>
+      {yTicks.map((t) => {
+        const py = yToPx(t);
+        return (
+          <g key={t}>
+            <line x1={0} x2={chartW} y1={py} y2={py} stroke="#e5e7eb" strokeWidth={1} />
+            <text x={-8} y={py} textAnchor="end" dominantBaseline="middle" className="fill-gray-400" fontSize={11}>
+              {fmtY(t)}
+            </text>
+          </g>
+        );
+      })}
+      <line x1={0} x2={chartW} y1={chartH} y2={chartH} stroke="#9ca3af" strokeWidth={1} />
+      {xTicks.map(({ value, x }, i) => (
+        <text
+          key={i}
+          x={x}
+          y={chartH + 16}
+          textAnchor="middle"
+          className="fill-gray-500"
+          fontSize={11}
+        >
+          {fmtX(value)}
+        </text>
+      ))}
+    </g>
+  );
+}

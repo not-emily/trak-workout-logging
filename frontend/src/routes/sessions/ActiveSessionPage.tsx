@@ -11,6 +11,7 @@ import {
   updateSession,
 } from "@/features/session/sessionActions";
 import { useRestTimer } from "@/features/session/useRestTimer";
+import { usePRDetection } from "@/features/session/usePRDetection";
 import { useExercises } from "@/features/exercise/useExercises";
 import { SessionExerciseBlock } from "@/components/sessions/SessionExerciseBlock";
 import { AddExerciseSheet } from "@/components/sessions/AddExerciseSheet";
@@ -50,6 +51,7 @@ export function ActiveSessionPage() {
 
   const restTimer = useRestTimer(DEFAULT_REST_SECONDS);
   const elapsed = useElapsedSeconds(session?.startedAt ?? null, session?.endedAt ?? null);
+  usePRDetection(session);
 
   // UI-only edit toggle for finished sessions. Live sessions are always editing;
   // finished sessions land in read-only unless: (a) navigated with intent to edit
