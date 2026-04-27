@@ -22,6 +22,8 @@ import {
 import { useExercises } from "@/features/exercise/useExercises";
 import { AddExerciseSheet } from "@/components/sessions/AddExerciseSheet";
 import { RoutineExerciseBlock } from "@/components/routines/RoutineExerciseBlock";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { MeatballMenu } from "@/components/ui/MeatballMenu";
 
 export function RoutineDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -33,6 +35,7 @@ export function RoutineDetailPage() {
   const [draftName, setDraftName] = useState("");
   const [editingDescription, setEditingDescription] = useState(false);
   const [draftDescription, setDraftDescription] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -55,12 +58,6 @@ export function RoutineDetailPage() {
   function handleStartSession() {
     const session = startSessionFromRoutine(routine!, findExercise);
     navigate(`/sessions/${session.id}`);
-  }
-
-  function handleDelete() {
-    if (!confirm(`Delete "${routine!.name}"? This cannot be undone.`)) return;
-    deleteRoutine(routine!.id);
-    navigate("/routines", { replace: true });
   }
 
   function startEditingName() {
@@ -100,15 +97,17 @@ export function RoutineDetailPage() {
     reorderRoutineExercises(routine!.id, newOrder);
   }
 
+  const canStart = routine.exercises.length > 0;
+
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pt-6 pb-8">
       <Link to="/routines" className="flex items-center gap-1 text-sm text-gray-600">
         <ArrowLeft className="h-4 w-4" />
         Back
       </Link>
 
       <header className="flex items-start justify-between gap-3">
-        <div className="flex flex-1 flex-col gap-1">
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
           {editingName ? (
             <input
               type="text"
@@ -119,13 +118,14 @@ export function RoutineDetailPage() {
                 if (e.key === "Enter") commitName();
               }}
               autoFocus
-              className="rounded-md bg-gray-100 px-2 py-1 text-2xl font-semibold focus:outline-none focus:ring-2 focus:ring-black"
+              autoComplete="off"
+              className="w-full rounded-md bg-gray-100 px-2 py-1 text-2xl font-semibold focus:outline-none focus:ring-2 focus:ring-black"
             />
           ) : (
             <button
               type="button"
               onClick={startEditingName}
-              className="text-left text-2xl font-semibold text-gray-900"
+              className="truncate text-left text-2xl font-semibold text-gray-900"
             >
               {routine.name}
             </button>
@@ -139,7 +139,7 @@ export function RoutineDetailPage() {
               autoFocus
               rows={2}
               placeholder="Description"
-              className="rounded-md bg-gray-100 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full rounded-md bg-gray-100 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-black"
             />
           ) : (
             <button
@@ -154,14 +154,30 @@ export function RoutineDetailPage() {
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={handleDelete}
-          aria-label="Delete routine"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-600"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
+        {!editingName && !editingDescription && (
+          <div className="flex shrink-0 items-center gap-1">
+            <button
+              type="button"
+              onClick={handleStartSession}
+              disabled={!canStart}
+              className="flex items-center gap-1 rounded-full bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+            >
+              <Play className="h-4 w-4" />
+              Start
+            </button>
+            <MeatballMenu
+              ariaLabel="Routine actions"
+              items={[
+                {
+                  label: "Delete routine",
+                  icon: Trash2,
+                  variant: "danger",
+                  onClick: () => setConfirmDelete(true),
+                },
+              ]}
+            />
+          </div>
+        )}
       </header>
 
       {routine.exercises.length > 0 && (
@@ -193,21 +209,24 @@ export function RoutineDetailPage() {
         Add exercise
       </button>
 
-      {routine.exercises.length > 0 && (
-        <button
-          type="button"
-          onClick={handleStartSession}
-          className="flex items-center justify-center gap-2 rounded-xl bg-black py-3 text-base font-medium text-white"
-        >
-          <Play className="h-4 w-4" />
-          Start session
-        </button>
-      )}
-
       <AddExerciseSheet
         open={pickerOpen}
         onClose={() => setPickerOpen(false)}
         onSelect={handleAddExercise}
+      />
+
+      <ConfirmDialog
+        open={confirmDelete}
+        variant="danger"
+        title={`Delete "${routine.name}"?`}
+        message="This routine and its planned exercises will be permanently removed. Sessions logged from it stay intact."
+        confirmLabel="Delete"
+        onCancel={() => setConfirmDelete(false)}
+        onConfirm={() => {
+          deleteRoutine(routine.id);
+          setConfirmDelete(false);
+          navigate("/routines", { replace: true });
+        }}
       />
     </div>
   );

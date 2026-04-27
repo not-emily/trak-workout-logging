@@ -17,13 +17,23 @@ export function RetroactiveSessionPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    // Retroactive sessions are created already-finished — endedAt = startedAt
+    // by default. Editing/adding sets later auto-completes them; the user can
+    // edit the start/end times if they want a real duration.
     const startedAt = new Date(datetime).toISOString();
-    const session = startEmptySession({ startedAt, name: name.trim() || null });
-    navigate(`/sessions/${session.id}`, { replace: true });
+    const session = startEmptySession({
+      startedAt,
+      endedAt: startedAt,
+      name: name.trim() || null,
+    });
+    // startInEdit so the session lands in editing mode — finished sessions are
+    // read-only by default, but a freshly-retroactive one is the user actively
+    // logging a past workout.
+    navigate(`/sessions/${session.id}`, { replace: true, state: { startInEdit: true } });
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="mx-auto flex max-w-2xl flex-col gap-4 px-4 pt-6 pb-8">
       <Link to="/sessions" className="flex items-center gap-1 text-sm text-gray-600">
         <ArrowLeft className="h-4 w-4" />
         Back

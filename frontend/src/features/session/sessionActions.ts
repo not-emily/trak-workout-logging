@@ -15,17 +15,20 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
-export function startEmptySession(opts: { startedAt?: string; name?: string | null } = {}): Session {
+export function startEmptySession(
+  opts: { startedAt?: string; endedAt?: string | null; name?: string | null } = {},
+): Session {
   const id = uuid();
   const now = nowIso();
   const startedAt = opts.startedAt ?? now;
+  const endedAt = opts.endedAt ?? null;
   const session: Session = {
     id,
     userId: "",                    // server overwrites
     routineId: null,
     name: opts.name ?? null,
     startedAt,
-    endedAt: null,
+    endedAt,
     notes: null,
     durationSeconds: null,
     createdAt: now,
@@ -35,6 +38,7 @@ export function startEmptySession(opts: { startedAt?: string; name?: string | nu
   queue.enqueue("PUT", `/api/v1/sessions/${id}`, {
     name: session.name,
     startedAt,
+    endedAt,
     notes: null,
   });
   syncWorker.poke();
@@ -57,6 +61,10 @@ export function updateSession(id: string, patch: Partial<Pick<Session, "name" | 
 
 export function finishSession(id: string): void {
   updateSession(id, { endedAt: nowIso() });
+}
+
+export function resumeSession(id: string): void {
+  updateSession(id, { endedAt: null });
 }
 
 export function deleteSession(id: string): void {
@@ -122,7 +130,7 @@ export function addSet(sessionExerciseId: string, defaults: Partial<WorkoutSet> 
     distanceMeters: defaults.distanceMeters ?? null,
     rpe: defaults.rpe ?? null,
     isWarmup: defaults.isWarmup ?? false,
-    completedAt: null,
+    completedAt: defaults.completedAt ?? null,
     notes: null,
     createdAt: now,
     updatedAt: now,
@@ -137,7 +145,7 @@ export function addSet(sessionExerciseId: string, defaults: Partial<WorkoutSet> 
     distanceMeters: set.distanceMeters,
     rpe: set.rpe,
     isWarmup: set.isWarmup,
-    completedAt: null,
+    completedAt: set.completedAt,
     notes: null,
   });
   syncWorker.poke();

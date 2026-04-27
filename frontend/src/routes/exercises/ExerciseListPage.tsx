@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
-import { Plus, Search } from "lucide-react";
+import { Dumbbell, Plus, Search } from "lucide-react";
 import { useExercises } from "@/features/exercise/useExercises";
 import { ExerciseCard } from "@/components/exercises/ExerciseCard";
 import { KindFilter } from "@/components/exercises/KindFilter";
 import { MuscleGroupFilter } from "@/components/exercises/MuscleGroupFilter";
+import { EmptyState } from "@/components/ui/EmptyState";
 import type { ExerciseKind } from "@/types/exercise";
 import type { MuscleGroup } from "@/lib/muscleGroups";
 
@@ -25,7 +26,7 @@ export function ExerciseListPage() {
   }, [exercises, query]);
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 pt-6 pb-8">
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">Exercises</h1>
         <Link
@@ -52,9 +53,9 @@ export function ExerciseListPage() {
       <MuscleGroupFilter value={muscleGroup} onChange={setMuscleGroup} />
 
       {filtered.length === 0 && (
-        <p className="text-sm text-gray-500">
+        <EmptyState icon={query ? Search : Dumbbell}>
           {query ? "No exercises match your search." : "No exercises yet — they'll appear shortly."}
-        </p>
+        </EmptyState>
       )}
 
       <ul className="flex flex-col gap-2">

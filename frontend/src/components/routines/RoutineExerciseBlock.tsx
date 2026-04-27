@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, X } from "lucide-react";
 import { removeRoutineExercise } from "@/features/routine/routineActions";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { PlannedSetsEditor } from "./PlannedSetsEditor";
 import type { Exercise } from "@/types/exercise";
 import type { RoutineExercise } from "@/types/routine";
@@ -12,6 +14,7 @@ type Props = {
 };
 
 export function RoutineExerciseBlock({ routineExercise, exercise }: Props) {
+  const [confirmRemove, setConfirmRemove] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: routineExercise.id,
   });
@@ -21,11 +24,6 @@ export function RoutineExerciseBlock({ routineExercise, exercise }: Props) {
     transition,
     opacity: isDragging ? 0.5 : 1,
   };
-
-  function handleRemove() {
-    if (!confirm(`Remove ${exercise.name} from this routine?`)) return;
-    removeRoutineExercise(routineExercise.id);
-  }
 
   return (
     <section
@@ -39,6 +37,9 @@ export function RoutineExerciseBlock({ routineExercise, exercise }: Props) {
           {...attributes}
           {...listeners}
           aria-label="Reorder"
+          // touch-action: none lets dnd-kit's TouchSensor own the gesture so
+          // the browser doesn't pan the page on drag in mobile/emulated mode.
+          style={{ touchAction: "none" }}
           className="flex h-7 w-7 shrink-0 cursor-grab items-center justify-center rounded-md text-gray-400 hover:text-gray-600 active:cursor-grabbing"
         >
           <GripVertical className="h-4 w-4" />
@@ -46,7 +47,7 @@ export function RoutineExerciseBlock({ routineExercise, exercise }: Props) {
         <h3 className="flex-1 font-medium text-gray-900">{exercise.name}</h3>
         <button
           type="button"
-          onClick={handleRemove}
+          onClick={() => setConfirmRemove(true)}
           aria-label={`Remove ${exercise.name}`}
           className="flex h-7 w-7 items-center justify-center rounded-full text-gray-400 hover:text-red-500"
         >
@@ -55,6 +56,19 @@ export function RoutineExerciseBlock({ routineExercise, exercise }: Props) {
       </header>
 
       <PlannedSetsEditor routineExercise={routineExercise} exerciseKind={exercise.kind} />
+
+      <ConfirmDialog
+        open={confirmRemove}
+        variant="danger"
+        title={`Remove ${exercise.name}?`}
+        message="This exercise will be removed from the routine. Existing logged sessions are unaffected."
+        confirmLabel="Remove"
+        onCancel={() => setConfirmRemove(false)}
+        onConfirm={() => {
+          removeRoutineExercise(routineExercise.id);
+          setConfirmRemove(false);
+        }}
+      />
     </section>
   );
 }

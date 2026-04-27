@@ -1,28 +1,25 @@
+import { useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router";
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { deleteExercise, useExercises } from "@/features/exercise/useExercises";
 import { formatMuscleGroup } from "@/lib/muscleGroups";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 export function ExerciseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { exercises } = useExercises();
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const exercise = exercises.find((e) => e.id === id);
   if (!exercise) {
     return <Navigate to="/exercises" replace />;
   }
 
-  function handleDelete() {
-    if (!confirm("Delete this exercise? This cannot be undone.")) return;
-    deleteExercise(exercise!.id);
-    navigate("/exercises", { replace: true });
-  }
-
   const canEdit = !exercise.isSystem;
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pt-6 pb-8">
       <Link to="/exercises" className="flex items-center gap-1 text-sm text-gray-600">
         <ArrowLeft className="h-4 w-4" />
         Back
@@ -58,7 +55,7 @@ export function ExerciseDetailPage() {
             </Link>
             <button
               type="button"
-              onClick={handleDelete}
+              onClick={() => setConfirmDelete(true)}
               className="flex h-8 w-8 items-center justify-center rounded-full bg-red-50 text-red-600"
               aria-label="Delete"
             >
@@ -92,6 +89,20 @@ export function ExerciseDetailPage() {
           </p>
         </section>
       )}
+
+      <ConfirmDialog
+        open={confirmDelete}
+        variant="danger"
+        title={`Delete ${exercise.name}?`}
+        message="This custom exercise will be removed. Sets you've already logged with it will be kept."
+        confirmLabel="Delete"
+        onCancel={() => setConfirmDelete(false)}
+        onConfirm={() => {
+          deleteExercise(exercise.id);
+          setConfirmDelete(false);
+          navigate("/exercises", { replace: true });
+        }}
+      />
     </div>
   );
 }

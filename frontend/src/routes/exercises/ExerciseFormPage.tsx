@@ -29,7 +29,7 @@ export function ExerciseFormPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="mx-auto flex max-w-2xl flex-col gap-4 px-4 pt-6 pb-8">
       <Link to="/exercises" className="flex items-center gap-1 text-sm text-gray-600">
         <ArrowLeft className="h-4 w-4" />
         Back

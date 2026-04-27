@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Clipboard, Plus } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useRoutines } from "@/features/routine/useRoutines";
 import { createRoutine } from "@/features/routine/routineActions";
 import { RoutineCard } from "@/components/routines/RoutineCard";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export function RoutinesListPage() {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ export function RoutinesListPage() {
   }
 
   return (
-    <div className="flex flex-col gap-3 p-4">
+    <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 pt-6 pb-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Routines</h1>
         <button
@@ -39,36 +40,41 @@ export function RoutinesListPage() {
       </div>
 
       {creating && (
-        <form onSubmit={handleCreate} className="flex gap-2 rounded-xl bg-white p-3 ring-1 ring-gray-200">
+        <form
+          onSubmit={handleCreate}
+          className="flex flex-col gap-2 rounded-xl bg-white p-3 ring-1 ring-gray-200 sm:flex-row"
+        >
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             autoFocus
             placeholder="Routine name"
-            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-base"
+            className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-base"
           />
-          <button
-            type="submit"
-            disabled={!name.trim()}
-            className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-          >
-            Create
-          </button>
-          <button
-            type="button"
-            onClick={() => setCreating(false)}
-            className="rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700"
-          >
-            Cancel
-          </button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setCreating(false)}
+              className="flex-1 rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 sm:flex-none"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!name.trim()}
+              className="flex-1 rounded-lg bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-60 sm:flex-none"
+            >
+              Create
+            </button>
+          </div>
         </form>
       )}
 
       {routines.length === 0 && !creating && (
-        <p className="text-sm text-gray-500">
+        <EmptyState icon={Clipboard}>
           No routines yet. Create one to save reusable workout templates.
-        </p>
+        </EmptyState>
       )}
 
       <ul className="flex flex-col gap-2">

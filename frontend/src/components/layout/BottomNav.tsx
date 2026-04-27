@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router";
 import { motion, LayoutGroup } from "framer-motion";
-import { Dumbbell, Clipboard, TrendingUp, HeartPulse, Plus } from "lucide-react";
+import { Dumbbell, Clipboard, TrendingUp, HeartPulse } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 type NavItem = { to: string; icon: LucideIcon; label: string };
@@ -25,9 +25,7 @@ const springTransition = {
   damping: 30,
 };
 
-type Props = { onActionPress: () => void };
-
-export function BottomNav({ onActionPress }: Props) {
+export function BottomNav() {
   const { pathname } = useLocation();
   const activeItem = getActiveItem(pathname);
 
@@ -35,12 +33,12 @@ export function BottomNav({ onActionPress }: Props) {
     <LayoutGroup>
       <nav
         aria-label="Main navigation"
-        className="fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)]"
+        className="pointer-events-none fixed bottom-0 left-0 right-0 z-50 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]"
       >
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-2">
+        <div className="pointer-events-none mx-auto flex max-w-5xl items-center justify-start gap-3 px-4 py-3">
           <motion.div
             layoutId="nav-pill"
-            className="flex items-center gap-1 rounded-full bg-gray-100/90 p-1 shadow-sm backdrop-blur-sm"
+            className="pointer-events-auto flex items-center gap-1 rounded-full bg-gray-100/90 p-1 shadow-sm backdrop-blur-sm"
             transition={springTransition}
           >
             {navItems.map((item) => {
@@ -52,7 +50,7 @@ export function BottomNav({ onActionPress }: Props) {
                   to={item.to}
                   aria-label={item.label}
                   aria-current={isActive ? "page" : undefined}
-                  className="relative flex h-10 w-10 items-center justify-center rounded-full"
+                  className="relative flex h-11 w-11 items-center justify-center rounded-full"
                 >
                   {isActive && (
                     <motion.div
@@ -70,17 +68,6 @@ export function BottomNav({ onActionPress }: Props) {
               );
             })}
           </motion.div>
-
-          <motion.button
-            type="button"
-            aria-label="New session"
-            layoutId="nav-action"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100/90 shadow-sm backdrop-blur-sm"
-            transition={springTransition}
-            onClick={onActionPress}
-          >
-            <Plus className="h-5 w-5 text-gray-500" />
-          </motion.button>
         </div>
       </nav>
     </LayoutGroup>
