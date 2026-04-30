@@ -20,7 +20,7 @@ import {
   updateRoutine,
 } from "@/features/routine/routineActions";
 import { useExercises } from "@/features/exercise/useExercises";
-import { AddExerciseSheet } from "@/components/sessions/AddExerciseSheet";
+import { ExercisePicker } from "@/components/exercises/ExercisePicker";
 import { RoutineExerciseBlock } from "@/components/routines/RoutineExerciseBlock";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { MeatballMenu } from "@/components/ui/MeatballMenu";
@@ -209,7 +209,7 @@ export function RoutineDetailPage() {
         Add exercise
       </button>
 
-      <AddExerciseSheet
+      <ExercisePicker
         open={pickerOpen}
         onClose={() => setPickerOpen(false)}
         onSelect={handleAddExercise}

@@ -9,9 +9,17 @@ type Props = {
   open: boolean;
   onClose: () => void;
   onSelect: (exercise: Exercise) => void;
+  title?: string;
+  emptyMessage?: string;
 };
 
-export function AddExerciseSheet({ open, onClose, onSelect }: Props) {
+export function ExercisePicker({
+  open,
+  onClose,
+  onSelect,
+  title = "Add exercise",
+  emptyMessage = "No exercises match.",
+}: Props) {
   const { exercises } = useExercises();
   const [query, setQuery] = useState("");
 
@@ -22,7 +30,7 @@ export function AddExerciseSheet({ open, onClose, onSelect }: Props) {
   }, [exercises, query]);
 
   return (
-    <BottomSheet open={open} onClose={onClose} title="Add exercise" bodyScroll={false}>
+    <BottomSheet open={open} onClose={onClose} title={title} bodyScroll={false}>
       <div className="border-b border-gray-200 p-3">
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -39,9 +47,7 @@ export function AddExerciseSheet({ open, onClose, onSelect }: Props) {
 
       <ul className="flex-1 overflow-y-auto">
         {filtered.length === 0 && (
-          <li className="p-4 text-center text-sm text-gray-500">
-            No exercises match.
-          </li>
+          <li className="p-4 text-center text-sm text-gray-500">{emptyMessage}</li>
         )}
         {filtered.map((exercise) => (
           <li key={exercise.id}>

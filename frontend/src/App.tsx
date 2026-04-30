@@ -12,6 +12,10 @@ import { RoutineDetailPage } from "@/routes/routines/RoutineDetailPage";
 import { ProgressPage } from "@/routes/progress/ProgressPage";
 import { ExerciseProgressPage } from "@/routes/progress/ExerciseProgressPage";
 import { BodyPage } from "@/routes/body/BodyPage";
+import { MetricDetailPage } from "@/routes/body/MetricDetailPage";
+import { GoalsListPage } from "@/routes/goals/GoalsListPage";
+import { GoalFormPage } from "@/routes/goals/GoalFormPage";
+import { GoalDetailPage } from "@/routes/goals/GoalDetailPage";
 import { ExerciseListPage } from "@/routes/exercises/ExerciseListPage";
 import { ExerciseDetailPage } from "@/routes/exercises/ExerciseDetailPage";
 import { ExerciseFormPage } from "@/routes/exercises/ExerciseFormPage";
@@ -41,6 +45,11 @@ function AppRoutes() {
         <Route path="/progress" element={<ProgressPage />} />
         <Route path="/progress/:id" element={<ExerciseProgressPage />} />
         <Route path="/body" element={<BodyPage />} />
+        <Route path="/body/:metric" element={<MetricDetailPage />} />
+        <Route path="/goals" element={<GoalsListPage />} />
+        <Route path="/goals/new" element={<GoalFormPage />} />
+        <Route path="/goals/:id" element={<GoalDetailPage />} />
+        <Route path="/goals/:id/edit" element={<GoalFormPage />} />
         <Route path="/exercises" element={<ExerciseListPage />} />
         <Route path="/exercises/new" element={<ExerciseFormPage />} />
         <Route path="/exercises/:id" element={<ExerciseDetailPage />} />

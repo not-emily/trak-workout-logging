@@ -14,7 +14,7 @@ import { useRestTimer } from "@/features/session/useRestTimer";
 import { usePRDetection } from "@/features/session/usePRDetection";
 import { useExercises } from "@/features/exercise/useExercises";
 import { SessionExerciseBlock } from "@/components/sessions/SessionExerciseBlock";
-import { AddExerciseSheet } from "@/components/sessions/AddExerciseSheet";
+import { ExercisePicker } from "@/components/exercises/ExercisePicker";
 import { RestTimerBar } from "@/components/sessions/RestTimerBar";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { formatDuration, useElapsedSeconds } from "@/lib/time";
@@ -290,7 +290,7 @@ export function ActiveSessionPage() {
         </button>
       )}
 
-      <AddExerciseSheet
+      <ExercisePicker
         open={pickerOpen}
         onClose={() => setPickerOpen(false)}
         onSelect={handleSelectExercise}

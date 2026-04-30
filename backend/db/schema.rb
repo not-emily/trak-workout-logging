@@ -10,9 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_25_031234) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_29_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "body_measurements", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "metric", null: false
+    t.text "notes"
+    t.datetime "recorded_at", null: false
+    t.string "unit", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.decimal "value", precision: 8, scale: 3, null: false
+    t.index ["user_id", "metric", "recorded_at"], name: "index_body_measurements_on_user_id_and_metric_and_recorded_at"
+    t.index ["user_id"], name: "index_body_measurements_on_user_id"
+  end
 
   create_table "exercises", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -32,6 +45,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_25_031234) do
     t.index ["seed_slug"], name: "index_exercises_on_seed_slug", unique: true, where: "(seed_slug IS NOT NULL)"
     t.check_constraint "is_system = true AND owner_user_id IS NULL OR is_system = false AND owner_user_id IS NOT NULL", name: "exercises_ownership_check"
     t.check_constraint "kind::text = ANY (ARRAY['strength'::character varying::text, 'cardio'::character varying::text, 'bodyweight'::character varying::text])", name: "exercises_kind_check"
+  end
+
+  create_table "goals", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "achieved_at"
+    t.datetime "created_at", null: false
+    t.string "direction", default: "increase", null: false
+    t.uuid "exercise_id"
+    t.string "metric"
+    t.string "name", null: false
+    t.decimal "start_value", precision: 8, scale: 3
+    t.date "target_date"
+    t.string "target_type", null: false
+    t.decimal "target_value", precision: 8, scale: 3, null: false
+    t.string "unit", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["exercise_id"], name: "index_goals_on_exercise_id"
+    t.index ["user_id", "target_type"], name: "index_goals_on_user_id_and_target_type"
+    t.index ["user_id"], name: "index_goals_on_user_id"
   end
 
   create_table "routine_exercises", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -115,7 +147,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_25_031234) do
     t.index "lower((email)::text)", name: "index_users_on_lower_email", unique: true
   end
 
+  add_foreign_key "body_measurements", "users"
   add_foreign_key "exercises", "users", column: "owner_user_id"
+  add_foreign_key "goals", "exercises"
+  add_foreign_key "goals", "users"
   add_foreign_key "routine_exercises", "exercises"
   add_foreign_key "routine_exercises", "routines"
   add_foreign_key "routines", "users"

@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router";
 import { motion, LayoutGroup } from "framer-motion";
-import { Dumbbell, Clipboard, TrendingUp, HeartPulse } from "lucide-react";
+import { Dumbbell, Clipboard, TrendingUp, HeartPulse, Target } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 type NavItem = { to: string; icon: LucideIcon; label: string };
@@ -10,6 +10,7 @@ const navItems: readonly NavItem[] = [
   { to: "/routines", icon: Clipboard, label: "Routines" },
   { to: "/progress", icon: TrendingUp, label: "Progress" },
   { to: "/body", icon: HeartPulse, label: "Body" },
+  { to: "/goals", icon: Target, label: "Goals" },
 ] as const;
 
 function getActiveItem(pathname: string): NavItem | null {

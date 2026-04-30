@@ -13,6 +13,8 @@ Rails.application.routes.draw do
       resources :sets, only: %i[update destroy]
       resources :routines, only: %i[index show update destroy]
       resources :routine_exercises, only: %i[update destroy]
+      resources :body_measurements, only: %i[index update destroy]
+      resources :goals, only: %i[index update destroy]
     end
   end
 end

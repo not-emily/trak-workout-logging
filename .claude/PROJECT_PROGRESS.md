@@ -2,24 +2,24 @@
 
 ## Plan Files
 Roadmap: [plan.md](../docs/plan/plan.md)
-Current Phase: [phase-6.md](../docs/plan/phases/phase-6.md)
+Current Phase: [phase-7.md](../docs/plan/phases/phase-7.md)
 Latest Weekly Report: [weekly-2026-W17.md](../docs/reports/weekly-2026-W17.md)
 
-Last Updated: 2026-04-27
-Latest Daily Report: [daily-2026-04-24.md](../docs/reports/daily-2026-04-24.md)
+Last Updated: 2026-04-29
+Latest Daily Report: [daily-2026-04-27.md](../docs/reports/daily-2026-04-27.md)
 
 ## Current Focus
-**Phase 5 (Progress & PRs) shipped.** Pure-client PR math, hand-rolled SVG `LineChart` (~210 LOC for the chart family), per-exercise progress page with metric tabs, live "New PR!" toasts during active sessions (sequential stack with swipe-up-to-dismiss-all), and motivational stat cards on the Progress page. Ready for Phase 6 — Body measurements + Goals.
+**Phase 6 (Body & Goals) shipped — bugs fixed, polish applied, GoalDetailPage added.** Ready to commit + deploy backend (one new migration: `start_value`). Phase 7 (PWA Polish) is the final v1 phase.
 
 ## Active Tasks
-- [NEXT] Phase 6: Body & Goals — [phase-6.md](../docs/plan/phases/phase-6.md)
-  - ⏭ Backend: `BodyMeasurement` + `Goal` models, policies, controllers, migrations, serializers
-  - ⏭ Frontend: types + actions + hooks for both resources
-  - ⏭ Body route: daily measurement entry + per-metric history chart (reuses `LineChart`)
-  - ⏭ Goals route: create / view progress / auto-mark achieved when data crosses target
-  - ⏭ Goal kinds: lift (target weight × reps for an exercise), body (target metric value), frequency (sessions per week)
-- [LATER] Heavy retheme — colors / font / vibe. Marginally better to do now (before Phase 6–7 visual surfaces lock in) but not urgent
-- [LATER] Re-deploy backend (`./scripts/deploy-backend.sh`) — Phases 5+6 together when 6 lands
+- [NEXT] Phase 7: PWA Polish — [phase-7.md](../docs/plan/phases/phase-7.md)
+  - ⏭ Hand-written service worker (`public/sw.js` — no Workbox / no plugin)
+  - ⏭ Properly sized `manifest.webmanifest` icons
+  - ⏭ Install guidance (iOS Add-to-Home-Screen + Android)
+  - ⏭ Offline banner + sync-issues inbox + reconnect toast
+  - ⏭ End-to-end testing on real iPhone + Android
+- [LATER] Heavy retheme — colors / font / vibe. Could weave in during Phase 7 polish or wait until v1 ships
+- [LATER] Set `NPM_VERSION=11` env var on CF Pages project (one-time, prevents lockfile-format drift on future deploys)
 
 ## Open Questions/Blockers
 None
@@ -91,6 +91,29 @@ None
     - `bestByReps` PRs **suppressed from toasts** (mathematically implied by higher-rep PRs) — still surface on the PR cards for granular data
     - Max 3 toasts per strength set (heaviest weight, est-1RM, heaviest volume), 1 for bodyweight, up to 3 for cardio
   - Route added: `/progress/:id` → `ExerciseProgressPage`. tsc clean. No backend changes (PRs are client-side). No new dependencies
+- [2026-04-27] **Deploy-pipeline fixes** — Cloudflare Pages was failing to build trak with "Missing: @emnapi/core from lock file" because CF Pages bundles `npm@10.9.2` (regardless of Node version) and trak's local lockfile was written by `npm@11`, which omits the `node_modules/@emnapi/{core,runtime}` entries that npm 10's strict `npm ci` requires. Triggered specifically because Vite 8 / Rolldown pulls in `@napi-rs/wasm-runtime` (with platform-conditional optionalDeps) — garnish doesn't hit this since it's still on Vite ≤6 / Rollup
+  - Added `frontend/.nvmrc` pinning Node 24 (commit `bb1737e`) — got CF Pages onto Node 24 but didn't change npm (CF bundles npm separately)
+  - Regenerated `package-lock.json` against `npm@10.9.2` via `npx -y npm@10.9.2 install` (commit `cc30265`) — now lockfile has the entries CF expects; `tsc -b` and `vite build` both pass locally
+  - Long-term: set `NPM_VERSION=11` env var on the CF Pages project so trak permanently uses npm 11 like local — prevents drift on next install
+  - Phases 3+4 polish, Phase 5, and the lockfile fix are all live at https://trak.1bit2bit.dev (frontend auto-deployed via CF Pages). Backend deploy still pending — no Phase 5 schema changes, so it's optional until Phase 6 ships
+- [2026-04-29] **Phase 6: Body & Goals — initial build**
+  - **Backend:** `BodyMeasurement` + `Goal` migrations, models, policies (with Scope), controllers, serializers; 17 new tests; `POLICY_CLASSES` registry updated; routes added
+  - **Frontend types:** `bodyMeasurement.ts` (allowed metrics + default unit + label formatter), `goal.ts`
+  - **Hooks:** `useBodyMeasurements` / `useLatestPerMetric` / `useMeasurementsForMetric`, `useGoals` / `useGoal`, `useGoalProgress` / `useGoalProgresses`
+  - **Components:** `body/MetricCard`, `body/LogMeasurementSheet`, `goals/GoalCard` (with progress bar), `goals/GoalTypePicker`
+  - **Pages:** `BodyPage` (replaces Phase 1 placeholder, hero "Current weight" card + metric grid + log button), `MetricDetailPage` (chart + swipe-to-delete history), `GoalsListPage`, `GoalFormPage`
+  - **Goal achievement detection:** `useGoalAchievementDetection` mounted in `AppShell` — watches all goals app-wide, fires celebration toast and persists `achievedAt` when progress crosses target
+  - **Routes added:** `/body/:metric`, `/goals`, `/goals/new`, `/goals/:id/edit`. Nav adds 5th tab (Target icon)
+  - tsc clean; 87/87 backend tests passing; backend smoke-test confirms `/api/v1/body_measurements` and `/api/v1/goals` route correctly
+- [2026-04-29] **Phase 6: bug fixes + UX polish from manual testing**
+  - **Decrease-goal progress math fixed.** Old code did `target / current` which is mathematically meaningless (target=140 / current=150 = 93%, regardless of where you started). Added `start_value` decimal column to `goals` (migration `20260429000001_add_start_value_to_goals.rb`). `upsertGoal` snapshots at creation: latest body_measurement for body goals, best est-1RM for lift goals, null for frequency. New `useGoalStartValueBackfill` hook (mounted in AppShell) lazy-fills startValue when a goal was created before any data existed. Math now: increase = `(current − start) / (target − start)`, decrease = `(start − current) / (start − target)`, both clamped 0–100. Falls back to old behavior when no baseline exists.
+  - **Frequency goals now count finished sessions, not started.** `frequencyProgress` filters on `endedAt !== null` and uses `endedAt` for the rolling 7-day cutoff. "Sessions per week" is honest now — a session you bailed out of doesn't tick the goal.
+  - **Achievement state re-arms on edit.** `upsertGoal` clears `achievedAt` if any of `targetType` / `targetValue` / `direction` / `exerciseId` / `metric` change (renames preserve achievement). Detector re-runs the next render — if the new definition still satisfies the condition, it instantly re-marks. Otherwise the badge disappears until the user re-hits the new target. Required adding `seenAchievedRef.delete(g.id)` in the detector for goals where `achievedAt` becomes null.
+  - **`AddExerciseSheet` → `ExercisePicker` (reusable).** Moved to `components/exercises/`, added optional `title` and `emptyMessage` props. Replaced the `<select>` in `GoalFormPage` with the searchable bottom sheet — consistent with sessions and routines, scales to long exercise lists. Updated 3 callers.
+  - **"Est. 1RM" label on lift goal cards.** `GoalCard`'s ProgressBar now takes a `currentLabel` prop; lift goals show `Est. 1RM 64 / 130 lb` so the displayed number isn't ambiguous.
+  - **`GoalDetailPage` at `/goals/:id`.** Goal cards now route to detail (not edit form). Detail page: back link, name + Achieved badge + pencil-to-edit button, hero with current/target/start/% progress bar, kind-aware chart — lift = best e1RM per session over time (reuses `LineChart`), body = metric over time (reuses `LineChart`), frequency = bar list of last 8 weeks of finished-session counts. Edit pencil → `/goals/:id/edit` (existing form). Updated `App.tsx` routes accordingly.
+  - **Tests:** Added 2 new backend controller tests (`start_value` persistence + null default). 89/89 backend pass; frontend `tsc -b` clean.
+  - **Pending:** commit + push, run `./scripts/deploy-backend.sh` to apply migration in prod.
 
 ## Next Session
-Start **Phase 6 — Body & Goals** ([phase-6.md](../docs/plan/phases/phase-6.md)). Backend models + migrations first (`BodyMeasurement` flexible-metric + `Goal` polymorphic — lift / body / frequency), then frontend hooks, then Body and Goals pages. Body route reuses `LineChart` for per-metric history. Goals auto-detect achievement from logged data.
+Start **Phase 7 — PWA Polish**: hand-written service worker (no Workbox/plugin), `manifest.webmanifest` with full icon set, install guidance for iOS+Android, offline banner, sync-issues inbox, reconnect toast, real-device testing. After Phase 7, v1 is done.
