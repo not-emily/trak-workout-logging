@@ -6,7 +6,7 @@ import type { LucideIcon } from "lucide-react";
 type NavItem = { to: string; icon: LucideIcon; label: string };
 
 const navItems: readonly NavItem[] = [
-  { to: "/sessions", icon: Dumbbell, label: "Sessions" },
+  { to: "/", icon: Dumbbell, label: "Sessions" },
   { to: "/routines", icon: Clipboard, label: "Routines" },
   { to: "/progress", icon: TrendingUp, label: "Progress" },
   { to: "/body", icon: HeartPulse, label: "Body" },
@@ -14,7 +14,12 @@ const navItems: readonly NavItem[] = [
 ] as const;
 
 function getActiveItem(pathname: string): NavItem | null {
-  for (const item of navItems) {
+  // Sessions tab is the root. Subpages still live under /sessions/* so they
+  // need to light it up too.
+  if (pathname === "/" || pathname === "/sessions" || pathname.startsWith("/sessions/")) {
+    return navItems[0];
+  }
+  for (const item of navItems.slice(1)) {
     if (pathname === item.to || pathname.startsWith(item.to + "/")) return item;
   }
   return null;

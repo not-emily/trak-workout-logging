@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { useRoutines } from "@/features/routine/useRoutines";
 import { createRoutine } from "@/features/routine/routineActions";
 import { RoutineCard } from "@/components/routines/RoutineCard";
+import { SyncIndicator } from "@/components/layout/SyncIndicator";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export function RoutinesListPage() {
@@ -29,14 +30,17 @@ export function RoutinesListPage() {
     <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 pt-6 pb-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Routines</h1>
-        <button
-          type="button"
-          onClick={startCreate}
-          className="flex items-center gap-1 rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white"
-        >
-          <Plus className="h-4 w-4" />
-          New
-        </button>
+        <div className="flex items-center gap-1.5">
+          <SyncIndicator />
+          <button
+            type="button"
+            onClick={startCreate}
+            className="flex items-center gap-1 rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white"
+          >
+            <Plus className="h-4 w-4" />
+            New
+          </button>
+        </div>
       </div>
 
       {creating && (

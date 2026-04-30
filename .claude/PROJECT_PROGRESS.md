@@ -9,17 +9,17 @@ Last Updated: 2026-04-29
 Latest Daily Report: [daily-2026-04-27.md](../docs/reports/daily-2026-04-27.md)
 
 ## Current Focus
-**Phase 6 (Body & Goals) shipped — bugs fixed, polish applied, GoalDetailPage added.** Ready to commit + deploy backend (one new migration: `start_value`). Phase 7 (PWA Polish) is the final v1 phase.
+**Phase 7 (PWA Polish) built — code complete, ready to ship.** Phase 6 + 7 will deploy together. Real-device testing is the final manual validation step before v1 is done.
 
 ## Active Tasks
-- [NEXT] Phase 7: PWA Polish — [phase-7.md](../docs/plan/phases/phase-7.md)
-  - ⏭ Hand-written service worker (`public/sw.js` — no Workbox / no plugin)
-  - ⏭ Properly sized `manifest.webmanifest` icons
-  - ⏭ Install guidance (iOS Add-to-Home-Screen + Android)
-  - ⏭ Offline banner + sync-issues inbox + reconnect toast
-  - ⏭ End-to-end testing on real iPhone + Android
-- [LATER] Heavy retheme — colors / font / vibe. Could weave in during Phase 7 polish or wait until v1 ships
+- [IN PROGRESS] Phase 7 ship + real-device validation
+  - ✓ All 6 implementation steps complete (icons, service worker, header/offline UX, settings + sync issues, install prompt, update banner)
+  - ⏭ Commit + push Phase 7
+  - ⏭ Run `./scripts/deploy-backend.sh` so the Phase 6 `start_value` migration runs in prod
+  - ⏭ Real-device testing pass: iPhone (Safari + installed PWA), Android (Chrome + installed PWA), airplane-mode toggles, cold-start from home screen, background↔foreground, full update flow
+- [LATER] Heavy retheme — colors / font / vibe. Could weave in after v1 ships
 - [LATER] Set `NPM_VERSION=11` env var on CF Pages project (one-time, prevents lockfile-format drift on future deploys)
+- [LATER] Bundle size — Vite warns at 500kB; we're at 549kB minified / 165kB gzipped. Code-splitting could shave it but the spec didn't call for it
 
 ## Open Questions/Blockers
 None
@@ -113,7 +113,19 @@ None
   - **"Est. 1RM" label on lift goal cards.** `GoalCard`'s ProgressBar now takes a `currentLabel` prop; lift goals show `Est. 1RM 64 / 130 lb` so the displayed number isn't ambiguous.
   - **`GoalDetailPage` at `/goals/:id`.** Goal cards now route to detail (not edit form). Detail page: back link, name + Achieved badge + pencil-to-edit button, hero with current/target/start/% progress bar, kind-aware chart — lift = best e1RM per session over time (reuses `LineChart`), body = metric over time (reuses `LineChart`), frequency = bar list of last 8 weeks of finished-session counts. Edit pencil → `/goals/:id/edit` (existing form). Updated `App.tsx` routes accordingly.
   - **Tests:** Added 2 new backend controller tests (`start_value` persistence + null default). 89/89 backend pass; frontend `tsc -b` clean.
-  - **Pending:** commit + push, run `./scripts/deploy-backend.sh` to apply migration in prod.
+- [2026-04-29] **Phase 7: PWA Polish — code complete**
+  - **Sessions list moved to `/`.** App root is now the sessions list; `/sessions` redirects to `/`; bottom-nav matcher still recognizes `/sessions/*` so detail routes light up the sessions tab. 7 file edits across App.tsx + auth pages + nav.
+  - **Manifest + icons (Twemoji 💪).** `scripts/generate_icons.sh` downloads the `1f4aa` SVG from jsdelivr (pinned `v14.0.2`), rasterizes via `rsvg-convert` at 700×700, composites onto a 1024×1024 black canvas, then resizes to 72/96/144/180/192/256/512. Same SVG is also dropped at `public/favicon.svg` so the browser tab matches the home-screen icon. Manifest covers `any` + `maskable` purposes (700/1024 ratio keeps the emoji inside Android's 80% safe zone). `index.html` got `apple-touch-icon`, `manifest`, `apple-mobile-web-app-capable/title/status-bar-style` meta tags.
+  - **Hand-rolled service worker.** `frontend/src/sw.template.js` (~70 LOC) with install/activate/fetch + message handlers. Cache-first for app shell + static assets, network-first for navigation (falls back to `/index.html` for SPA boot offline), pass-through for `/api/*` (localStore is the API cache). `buildSwPlugin` in `vite.config.ts` (~30 LOC, `enforce: "post"`) reads the bundle's chunk filenames in `generateBundle`, computes a sha1 build version from the shell list, replaces `__BUILD_VERSION__` + `__APP_SHELL__` placeholder tokens, and emits `dist/sw.js`. SW is registered in `main.tsx` only when `import.meta.env.PROD`.
+  - **Update detection store.** `sync/swRegister.ts` exposes `swUpdateStore` with `subscribe / hasUpdate / applyUpdate`. `applyUpdate` posts `{type: "SKIP_WAITING"}` to the waiting worker; `controllerchange` triggers a one-time reload. Black `UpdateBanner` ("Update available — tap to refresh") at the very top of the layout consumes the store via `useSyncExternalStore`.
+  - **Offline UX.** `OfflineBanner` (yellow strip with `CloudOff` icon, "Offline — your logs are safe") renders inline below `UpdateBanner` when `navigator.onLine === false`. `useReconnectToast` in `AppShell` fires "X updates synced" toast — but only after a real offline period (gated by `wasOfflineRef`), so single online writes don't toast.
+  - **Inline `SyncIndicator` pill.** Floating SyncIndicator scrapped after testing felt website-y. New inline pill renders directly in each list page's header row to the left of action buttons. Three states: red `AlertCircle` "N" linking to `/settings/sync-issues` when failed, blue `RefreshCw` spinner "Syncing… (N)" when online + pending, gray `CloudOff` "N pending" when offline + pending, otherwise hidden. Added to all 6 list pages (Sessions, Routines, Progress, Body, Goals, Exercises).
+  - **No global header bar.** Sticky `TopBar` shipped initially, then removed — felt website-y with the wordmark. Replaced with: gear icon in the Sessions page header row only (with red-dot badge when failed entries exist). Other pages don't show the gear. Settings is reachable in 2 taps from anywhere.
+  - **Settings + Sync issues pages.** `SettingsPage` at `/settings` (signed-in email, sync status row with conditional `CheckCircle2` / `AlertCircle` icon, install instructions for iOS + Android, "Install trak" button gated on `useInstallPrompt`'s `canInstall` for Android Chromium, sign out, version label from `__BUILD_LABEL__` injected by Vite `define`). `SyncIssuesPage` at `/settings/sync-issues` lists `queue.failed()` entries with Retry / Discard. Required `useSyncExternalStore` snapshot caching to avoid infinite re-render (queue.failed() returns fresh array each call) — module-level `cachedFailed` invalidated on `queue.subscribe` notification.
+  - **Install prompt.** `useInstallPrompt` captures `beforeinstallprompt` at module load (fires earlier than React mounts). Returns `{canInstall, promptInstall}`. Single-use per Chrome's spec. `appinstalled` clears the deferred event.
+  - **Hooks added:** `useReconnectToast`, `useGoalStartValueBackfill` (already shipped), `useInstallPrompt`. Frontend `tsc -b` clean. Production build emits `dist/sw.js` correctly with substituted tokens.
+  - **Bundle size:** 549kB minified / 165kB gzipped. Vite warns at 500kB but the spec didn't call for code-splitting; deferred to post-launch.
+  - **Real-device testing still pending** — that's the validation list at `phase-7.md:174–202`.
 
 ## Next Session
-Start **Phase 7 — PWA Polish**: hand-written service worker (no Workbox/plugin), `manifest.webmanifest` with full icon set, install guidance for iOS+Android, offline banner, sync-issues inbox, reconnect toast, real-device testing. After Phase 7, v1 is done.
+Commit + push Phase 7. Run `./scripts/deploy-backend.sh` to apply the Phase 6 `start_value` migration. Then real-device testing pass: install on iPhone via Add-to-Home-Screen, install on Android via the Settings page button, airplane-mode toggle while logging, cold-start offline, foreground/background transitions, full update flow (deploy a new build, watch the banner, tap to refresh). After that passes, v1 is done.

@@ -17,7 +17,7 @@ export function LoginPage() {
     setError(null);
     try {
       await login(email, password);
-      navigate("/sessions", { replace: true });
+      navigate("/", { replace: true });
     } catch (err) {
       setError(err instanceof ApiError ? err.body.error : "Login failed");
     } finally {

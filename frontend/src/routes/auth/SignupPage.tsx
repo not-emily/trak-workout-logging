@@ -18,7 +18,7 @@ export function SignupPage() {
     setError(null);
     try {
       await signup(email, password, name || undefined);
-      navigate("/sessions", { replace: true });
+      navigate("/", { replace: true });
     } catch (err) {
       setError(err instanceof ApiError ? err.body.error : "Signup failed");
     } finally {

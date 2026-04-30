@@ -3,6 +3,7 @@ import { Plus, HeartPulse } from "lucide-react";
 import { useLatestPerMetric } from "@/features/body/useBodyMeasurements";
 import { LogMeasurementSheet } from "@/components/body/LogMeasurementSheet";
 import { MetricCard } from "@/components/body/MetricCard";
+import { SyncIndicator } from "@/components/layout/SyncIndicator";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export function BodyPage() {
@@ -16,14 +17,17 @@ export function BodyPage() {
     <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 pt-6 pb-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Body</h1>
-        <button
-          type="button"
-          onClick={() => setLogOpen(true)}
-          className="flex items-center gap-1 rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white"
-        >
-          <Plus className="h-4 w-4" />
-          Log
-        </button>
+        <div className="flex items-center gap-1.5">
+          <SyncIndicator />
+          <button
+            type="button"
+            onClick={() => setLogOpen(true)}
+            className="flex items-center gap-1 rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white"
+          >
+            <Plus className="h-4 w-4" />
+            Log
+          </button>
+        </div>
       </div>
 
       {weight && (

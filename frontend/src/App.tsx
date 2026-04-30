@@ -19,6 +19,8 @@ import { GoalDetailPage } from "@/routes/goals/GoalDetailPage";
 import { ExerciseListPage } from "@/routes/exercises/ExerciseListPage";
 import { ExerciseDetailPage } from "@/routes/exercises/ExerciseDetailPage";
 import { ExerciseFormPage } from "@/routes/exercises/ExerciseFormPage";
+import { SettingsPage } from "@/routes/settings/SettingsPage";
+import { SyncIssuesPage } from "@/routes/settings/SyncIssuesPage";
 
 function AppRoutes() {
   const navigate = useNavigate();
@@ -36,8 +38,8 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="/sessions" replace />} />
-        <Route path="/sessions" element={<SessionsListPage />} />
+        <Route index element={<SessionsListPage />} />
+        <Route path="/sessions" element={<Navigate to="/" replace />} />
         <Route path="/sessions/log-past" element={<RetroactiveSessionPage />} />
         <Route path="/sessions/:id" element={<ActiveSessionPage />} />
         <Route path="/routines" element={<RoutinesListPage />} />
@@ -54,9 +56,11 @@ function AppRoutes() {
         <Route path="/exercises/new" element={<ExerciseFormPage />} />
         <Route path="/exercises/:id" element={<ExerciseDetailPage />} />
         <Route path="/exercises/:id/edit" element={<ExerciseFormPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/settings/sync-issues" element={<SyncIssuesPage />} />
       </Route>
 
-      <Route path="*" element={<Navigate to="/sessions" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

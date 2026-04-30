@@ -87,7 +87,7 @@ export function ActiveSessionPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editingTimes, draftStartedAt, draftEndedAt]);
 
-  if (!id) return <Navigate to="/sessions" replace />;
+  if (!id) return <Navigate to="/" replace />;
   if (!session) {
     return (
       <div className="p-6">
@@ -135,7 +135,7 @@ export function ActiveSessionPage() {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-3 px-4 pt-6 pb-8">
-      <Link to="/sessions" className="flex items-center gap-1 text-sm text-gray-600">
+      <Link to="/" className="flex items-center gap-1 text-sm text-gray-600">
         <ArrowLeft className="h-4 w-4" />
         Back
       </Link>
@@ -305,7 +305,7 @@ export function ActiveSessionPage() {
         onConfirm={() => {
           finishSession(session.id);
           setConfirmFinish(false);
-          navigate("/sessions", { replace: true });
+          navigate("/", { replace: true });
         }}
       />
 
@@ -319,7 +319,7 @@ export function ActiveSessionPage() {
         onConfirm={() => {
           deleteSession(session.id);
           setConfirmDelete(false);
-          navigate("/sessions", { replace: true });
+          navigate("/", { replace: true });
         }}
       />
 

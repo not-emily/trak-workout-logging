@@ -5,6 +5,7 @@ import { useExercises } from "@/features/exercise/useExercises";
 import { useLoggedExerciseIds } from "@/features/progress/useExerciseHistory";
 import { useProgressSummary } from "@/features/progress/useProgressSummary";
 import { ProgressStatCards } from "@/components/progress/ProgressStatCards";
+import { SyncIndicator } from "@/components/layout/SyncIndicator";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export function ProgressPage() {
@@ -22,7 +23,10 @@ export function ProgressPage() {
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 pt-6 pb-8">
-      <h1 className="text-2xl font-semibold">Progress</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Progress</h1>
+        <SyncIndicator />
+      </div>
 
       {logged.length === 0 ? (
         <EmptyState icon={TrendingUp}>

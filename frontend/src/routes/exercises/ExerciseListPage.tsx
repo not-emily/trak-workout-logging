@@ -5,6 +5,7 @@ import { useExercises } from "@/features/exercise/useExercises";
 import { ExerciseCard } from "@/components/exercises/ExerciseCard";
 import { KindFilter } from "@/components/exercises/KindFilter";
 import { MuscleGroupFilter } from "@/components/exercises/MuscleGroupFilter";
+import { SyncIndicator } from "@/components/layout/SyncIndicator";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { ExerciseKind } from "@/types/exercise";
 import type { MuscleGroup } from "@/lib/muscleGroups";
@@ -29,13 +30,16 @@ export function ExerciseListPage() {
     <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 pt-6 pb-8">
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">Exercises</h1>
-        <Link
-          to="/exercises/new"
-          className="flex items-center gap-1 rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white"
-        >
-          <Plus className="h-4 w-4" />
-          New
-        </Link>
+        <div className="flex items-center gap-1.5">
+          <SyncIndicator />
+          <Link
+            to="/exercises/new"
+            className="flex items-center gap-1 rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white"
+          >
+            <Plus className="h-4 w-4" />
+            New
+          </Link>
+        </div>
       </div>
 
       <div className="relative">
