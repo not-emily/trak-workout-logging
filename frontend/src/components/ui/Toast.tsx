@@ -1,13 +1,16 @@
 import { useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle2, Trophy } from "lucide-react";
 import type { ReactNode } from "react";
 
-export type ToastVariant = "default" | "success";
+export type ToastVariant = "default" | "success" | "achievement";
 
 type ToastEntry = {
   id: string;
   variant: ToastVariant;
   title: string;
+  /** Optional headline value, only rendered by the "achievement" variant. */
+  value?: string;
   body?: string;
 };
 
@@ -36,9 +39,18 @@ function startActiveTimer(): void {
 }
 
 export const toast = {
-  show(t: { title: string; body?: string; variant?: ToastVariant; id?: string }): string {
+  show(t: {
+    title: string;
+    body?: string;
+    value?: string;
+    variant?: ToastVariant;
+    id?: string;
+  }): string {
     const id = t.id ?? `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-    entries = [...entries, { id, title: t.title, body: t.body, variant: t.variant ?? "default" }];
+    entries = [
+      ...entries,
+      { id, title: t.title, body: t.body, value: t.value, variant: t.variant ?? "default" },
+    ];
     emit();
     startActiveTimer();
     return id;
@@ -71,6 +83,60 @@ function getEntries(): ToastEntry[] {
   return entries;
 }
 
+function ToastBody({ entry }: { entry: ToastEntry }): ReactNode {
+  if (entry.variant === "achievement") {
+    return (
+      <>
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-60"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 80% at 0% 0%, var(--color-gold-soft), transparent 65%)",
+          }}
+        />
+        <div aria-hidden className="absolute inset-y-0 left-0 w-[3px] bg-gold" />
+        <div className="relative pl-3">
+          <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-gold">
+            <Trophy className="h-3 w-3" strokeWidth={2.5} />
+            {entry.title}
+          </div>
+          {entry.value && (
+            <div className="mt-2 font-display-shade text-3xl leading-none text-fg">
+              {entry.value}
+            </div>
+          )}
+          {entry.body && (
+            <div className="mt-2 text-[11px] text-fg-muted">{entry.body}</div>
+          )}
+        </div>
+      </>
+    );
+  }
+
+  if (entry.variant === "success") {
+    return (
+      <>
+        <div aria-hidden className="absolute inset-y-0 left-0 w-[3px] bg-accent" />
+        <div className="relative flex items-start gap-2 pl-3">
+          <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-accent" strokeWidth={2.5} />
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-fg">{entry.title}</div>
+            {entry.body && <div className="mt-0.5 text-xs text-fg-muted">{entry.body}</div>}
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <div className="text-sm">
+      <div className="font-semibold text-fg">{entry.title}</div>
+      {entry.body && <div className="mt-0.5 text-xs text-fg-muted">{entry.body}</div>}
+    </div>
+  );
+}
+
 export function ToastHost(): ReactNode {
   const items = useSyncExternalStore(subscribe, getEntries, getEntries);
   const visible = items.slice(0, STACK_VISIBLE);
@@ -85,6 +151,7 @@ export function ToastHost(): ReactNode {
         <AnimatePresence>
           {visible.map((t, i) => {
             const isFront = i === 0;
+            const isAchievement = t.variant === "achievement";
             return (
               <motion.div
                 key={t.id}
@@ -113,15 +180,15 @@ export function ToastHost(): ReactNode {
                   zIndex: STACK_VISIBLE - i,
                   transformOrigin: "top center",
                   touchAction: isFront ? "none" : undefined,
+                  boxShadow: isAchievement
+                    ? "0 0 32px rgba(251, 191, 36, 0.28), 0 8px 24px rgba(0, 0, 0, 0.5)"
+                    : "0 8px 24px rgba(0, 0, 0, 0.5)",
                 }}
-                className={`pointer-events-auto rounded-2xl px-4 py-2.5 text-sm shadow-lg ${
-                  t.variant === "success"
-                    ? "bg-green-600 text-white"
-                    : "bg-gray-900 text-white"
+                className={`pointer-events-auto relative overflow-hidden rounded-2xl border bg-surface-1 ${
+                  isAchievement ? "border-gold/30 px-4 py-3.5" : "border-line-strong px-4 py-3"
                 } ${isFront ? "cursor-pointer" : ""}`}
               >
-                <div className="font-semibold">{t.title}</div>
-                {t.body && <div className="mt-0.5 text-xs opacity-90">{t.body}</div>}
+                <ToastBody entry={t} />
               </motion.div>
             );
           })}

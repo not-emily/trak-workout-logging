@@ -26,11 +26,24 @@ export function SignupPage() {
     }
   }
 
+  const fieldLabel =
+    "flex flex-col gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-fg-subtle";
+  const fieldInput =
+    "rounded-lg border border-line-strong bg-surface-2 px-3 py-2.5 font-sans text-base normal-case tracking-normal text-fg placeholder:text-fg-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-soft";
+
   return (
     <div className="mx-auto flex min-h-full max-w-sm flex-col justify-center p-6">
-      <h1 className="mb-6 text-3xl font-semibold">Sign up</h1>
+      <div className="mb-8 flex flex-col items-center gap-1">
+        <h1 className="font-display text-6xl leading-none text-fg">trak</h1>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.32em] text-fg-subtle">
+          log it / lift it
+        </span>
+      </div>
+      <h2 className="mb-5 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-fg-subtle">
+        Sign up
+      </h2>
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
-        <label className="flex flex-col gap-1 text-sm">
+        <label className={fieldLabel}>
           Email
           <input
             type="email"
@@ -38,21 +51,31 @@ export function SignupPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="rounded-lg border border-gray-300 px-3 py-2 text-base"
+            className={fieldInput}
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm">
-          Name <span className="text-gray-400">(optional)</span>
+        <label className={fieldLabel}>
+          <span>
+            Name{" "}
+            <span className="font-normal normal-case tracking-normal text-fg-faint">
+              (optional)
+            </span>
+          </span>
           <input
             type="text"
             autoComplete="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-base"
+            className={fieldInput}
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm">
-          Password <span className="text-gray-400">(min 8 characters)</span>
+        <label className={fieldLabel}>
+          <span>
+            Password{" "}
+            <span className="font-normal normal-case tracking-normal text-fg-faint">
+              (min 8 characters)
+            </span>
+          </span>
           <input
             type="password"
             autoComplete="new-password"
@@ -60,21 +83,21 @@ export function SignupPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={8}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-base"
+            className={fieldInput}
           />
         </label>
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-danger">{error}</p>}
         <button
           type="submit"
           disabled={submitting}
-          className="mt-2 rounded-lg bg-black px-4 py-2 font-medium text-white disabled:opacity-60"
+          className="mt-2 rounded-lg bg-accent px-4 py-2.5 font-semibold text-accent-fg transition-colors hover:bg-accent-hover disabled:bg-surface-3 disabled:text-fg-faint"
         >
           {submitting ? "Creating…" : "Create account"}
         </button>
       </form>
-      <p className="mt-6 text-sm text-gray-600">
+      <p className="mt-6 text-center text-sm text-fg-muted">
         Already have an account?{" "}
-        <Link to="/login" className="underline">
+        <Link to="/login" className="font-semibold text-accent transition-colors hover:text-accent-hover">
           Log in
         </Link>
       </p>

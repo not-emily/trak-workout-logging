@@ -12,6 +12,8 @@ type Props = {
   open: boolean;
   onClose: () => void;
   initialMetric?: BodyMetric;
+  /** Tailwind `md:max-w-*` to match the parent page's content width. */
+  maxWidth?: string;
 };
 
 function localDatetimeNow(): string {
@@ -20,7 +22,12 @@ function localDatetimeNow(): string {
   return local.toISOString().slice(0, 16);
 }
 
-export function LogMeasurementSheet({ open, onClose, initialMetric }: Props) {
+const fieldClass =
+  "rounded-lg border border-line-strong bg-surface-2 px-3 py-2.5 text-base text-fg placeholder:text-fg-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-soft";
+
+const labelClass = "flex flex-col gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-fg-subtle";
+
+export function LogMeasurementSheet({ open, onClose, initialMetric, maxWidth }: Props) {
   const [metric, setMetric] = useState<BodyMetric>(initialMetric ?? "weight");
   const [value, setValue] = useState("");
   const [unit, setUnit] = useState(defaultUnit(initialMetric ?? "weight"));
@@ -53,17 +60,17 @@ export function LogMeasurementSheet({ open, onClose, initialMetric }: Props) {
   }
 
   return (
-    <BottomSheet open={open} onClose={onClose} title="Log measurement">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 p-4">
-        <label className="flex flex-col gap-1 text-sm">
+    <BottomSheet open={open} onClose={onClose} title="Log measurement" maxWidth={maxWidth}>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-4">
+        <label className={labelClass}>
           Metric
           <select
             value={metric}
             onChange={(e) => onMetricChange(e.target.value as BodyMetric)}
-            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-base"
+            className={fieldClass + " font-sans normal-case tracking-normal"}
           >
             {BODY_METRICS.map((m) => (
-              <option key={m} value={m}>
+              <option key={m} value={m} className="bg-surface-2 text-fg">
                 {formatMetricLabel(m)}
               </option>
             ))}
@@ -71,7 +78,7 @@ export function LogMeasurementSheet({ open, onClose, initialMetric }: Props) {
         </label>
 
         <div className="flex gap-2">
-          <label className="flex flex-1 flex-col gap-1 text-sm">
+          <label className={labelClass + " flex-1"}>
             Value
             <input
               type="text"
@@ -80,43 +87,43 @@ export function LogMeasurementSheet({ open, onClose, initialMetric }: Props) {
               onChange={(e) => setValue(e.target.value)}
               autoFocus
               required
-              className="rounded-lg border border-gray-300 px-3 py-2 text-base"
+              className={fieldClass + " font-mono normal-case tracking-normal"}
             />
           </label>
-          <label className="flex w-24 flex-col gap-1 text-sm">
+          <label className={labelClass + " w-24"}>
             Unit
             <input
               type="text"
               value={unit}
               onChange={(e) => setUnit(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-base"
+              className={fieldClass + " font-mono normal-case tracking-normal"}
             />
           </label>
         </div>
 
-        <label className="flex flex-col gap-1 text-sm">
+        <label className={labelClass}>
           When
           <input
             type="datetime-local"
             value={recordedAt}
             onChange={(e) => setRecordedAt(e.target.value)}
             required
-            className="rounded-lg border border-gray-300 px-3 py-2 text-base"
+            className={fieldClass + " font-sans normal-case tracking-normal [color-scheme:dark]"}
           />
         </label>
 
-        <div className="flex justify-end gap-2 pt-1">
+        <div className="flex justify-end gap-2 pt-2">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700"
+            className="rounded-lg bg-surface-2 px-4 py-2 text-sm font-medium text-fg-muted transition-colors hover:bg-surface-3 hover:text-fg"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={!value.trim()}
-            className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+            className="rounded-lg bg-accent px-5 py-2 text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover disabled:opacity-40"
           >
             Save
           </button>

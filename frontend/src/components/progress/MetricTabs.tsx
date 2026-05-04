@@ -37,7 +37,7 @@ export function MetricTabs({ kind, value, onChange }: Props) {
   const metrics = metricsFor(kind);
   if (metrics.length <= 1) return null;
   return (
-    <div className="inline-flex gap-1 rounded-full bg-gray-100 p-1">
+    <div className="inline-flex gap-1 rounded-full border border-line-strong bg-surface-1 p-1">
       {metrics.map((m) => {
         const active = m === value;
         return (
@@ -45,8 +45,10 @@ export function MetricTabs({ kind, value, onChange }: Props) {
             key={m}
             type="button"
             onClick={() => onChange(m)}
-            className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
-              active ? "bg-white text-gray-900 shadow-sm" : "text-gray-500"
+            className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] transition-colors ${
+              active
+                ? "bg-accent text-accent-fg"
+                : "text-fg-muted hover:text-fg"
             }`}
           >
             {LABELS[m]}

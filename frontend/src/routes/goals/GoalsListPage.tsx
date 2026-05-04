@@ -11,16 +11,16 @@ export function GoalsListPage() {
   const progresses = useGoalProgresses(goals);
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-3 px-4 pt-6 pb-8">
+    <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pt-6 pb-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Goals</h1>
-        <div className="flex items-center gap-1.5">
+        <h1 className="font-display text-3xl leading-none text-fg">Goals</h1>
+        <div className="flex items-center gap-2">
           <SyncIndicator />
           <Link
             to="/goals/new"
-            className="flex items-center gap-1 rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white"
+            className="flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4" strokeWidth={2.5} />
             New
           </Link>
         </div>

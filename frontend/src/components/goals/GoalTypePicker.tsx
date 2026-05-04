@@ -24,13 +24,18 @@ export function GoalTypePicker({ value, onChange }: Props) {
             key={opt.value}
             type="button"
             onClick={() => onChange(opt.value)}
-            className={`flex flex-col items-start gap-1 rounded-xl p-3 text-left ring-1 transition-colors ${
-              active ? "bg-gray-900 text-white ring-gray-900" : "bg-white text-gray-900 ring-gray-200 hover:bg-gray-50"
+            className={`flex flex-col items-start gap-1.5 rounded-xl border p-3 text-left transition-colors ${
+              active
+                ? "border-accent bg-accent-soft text-fg"
+                : "border-line bg-surface-1 text-fg-soft hover:border-line-strong hover:bg-surface-2"
             }`}
           >
-            <Icon className="h-4 w-4" />
-            <span className="text-sm font-semibold">{opt.label}</span>
-            <span className={`text-xs ${active ? "text-gray-300" : "text-gray-500"}`}>
+            <Icon
+              className={`h-4 w-4 ${active ? "text-accent" : "text-fg-muted"}`}
+              strokeWidth={2.25}
+            />
+            <span className="font-display text-sm">{opt.label}</span>
+            <span className={`text-[11px] ${active ? "text-fg-muted" : "text-fg-muted"}`}>
               {opt.description}
             </span>
           </button>

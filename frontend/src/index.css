@@ -1,7 +1,61 @@
 @import "tailwindcss";
 
+@theme {
+  /* Surfaces — zinc cascade */
+  --color-bg: #09090b;
+  --color-surface-1: #18181b;
+  --color-surface-2: #27272a;
+  --color-surface-3: #3f3f46;
+
+  /* Text */
+  --color-fg: #fafafa;
+  --color-fg-soft: #d4d4d8;
+  --color-fg-muted: #a1a1aa;
+  --color-fg-subtle: #71717a;
+  --color-fg-faint: #52525b;
+  --color-fg-disabled: #3f3f46;
+
+  /* Borders */
+  --color-line: rgba(255, 255, 255, 0.06);
+  --color-line-strong: rgba(255, 255, 255, 0.12);
+
+  /* Universal action accent — lime */
+  --color-accent: #a3e635;
+  --color-accent-hover: #bef264;
+  --color-accent-soft: rgba(163, 230, 53, 0.14);
+  --color-accent-fg: #0a0a0a;
+
+  /* Exercise kinds */
+  --color-strength: #fb923c;
+  --color-strength-soft: rgba(251, 146, 60, 0.16);
+  --color-cardio: #22d3ee;
+  --color-cardio-soft: rgba(34, 211, 238, 0.16);
+  --color-bodyweight: #a78bfa;
+  --color-bodyweight-soft: rgba(167, 139, 250, 0.16);
+
+  /* Body domain */
+  --color-body-accent: #fb7185;
+  --color-body-soft: rgba(251, 113, 133, 0.16);
+
+  /* Achievement — PRs and hit goals */
+  --color-gold: #fbbf24;
+  --color-gold-light: #fcd34d;
+  --color-gold-soft: rgba(251, 191, 36, 0.18);
+
+  /* Destructive */
+  --color-danger: #f87171;
+  --color-danger-soft: rgba(248, 113, 113, 0.16);
+
+  /* Typography */
+  --font-display: "Bungee", system-ui, sans-serif;
+  --font-display-inline: "Bungee Inline", "Bungee", system-ui, sans-serif;
+  --font-display-shade: "Bungee Shade", "Bungee", system-ui, sans-serif;
+  --font-sans: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 html,
@@ -13,9 +67,29 @@ body,
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #fff;
-  color: #111827;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+}
+
+/* Display = Bungee family. Caps-only by design — apply uppercase
+   on display text. Slight tracking helps the chunky strokes breathe. */
+.font-display,
+.font-display-inline,
+.font-display-shade {
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+/* Tabular numbers everywhere mono is used — keeps set columns aligned. */
+.font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hairline tabular numerics on the sans body face too — useful for inline counts. */
+.tabular {
+  font-variant-numeric: tabular-nums;
 }

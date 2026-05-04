@@ -14,8 +14,6 @@ const navItems: readonly NavItem[] = [
 ] as const;
 
 function getActiveItem(pathname: string): NavItem | null {
-  // Sessions tab is the root. Subpages still live under /sessions/* so they
-  // need to light it up too.
   if (pathname === "/" || pathname === "/sessions" || pathname.startsWith("/sessions/")) {
     return navItems[0];
   }
@@ -44,7 +42,7 @@ export function BottomNav() {
         <div className="pointer-events-none mx-auto flex max-w-5xl items-center justify-start gap-3 px-4 py-3">
           <motion.div
             layoutId="nav-pill"
-            className="pointer-events-auto flex items-center gap-1 rounded-full bg-gray-100/90 p-1 shadow-sm backdrop-blur-sm"
+            className="pointer-events-auto flex items-center gap-1 rounded-full border border-line-strong bg-surface-1/85 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.4)] backdrop-blur-md"
             transition={springTransition}
           >
             {navItems.map((item) => {
@@ -61,14 +59,15 @@ export function BottomNav() {
                   {isActive && (
                     <motion.div
                       layoutId="nav-active-bg"
-                      className="absolute inset-0 rounded-full bg-white shadow-sm"
+                      className="absolute inset-0 rounded-full bg-accent shadow-[0_0_20px_rgba(163,230,53,0.35)]"
                       transition={springTransition}
                     />
                   )}
                   <Icon
                     className={`relative z-10 h-5 w-5 transition-colors ${
-                      isActive ? "text-gray-900" : "text-gray-400"
+                      isActive ? "text-accent-fg" : "text-fg-faint"
                     }`}
+                    strokeWidth={isActive ? 2.5 : 2}
                   />
                 </Link>
               );

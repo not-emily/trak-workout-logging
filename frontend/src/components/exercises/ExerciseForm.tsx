@@ -8,11 +8,16 @@ type Props = {
   onSubmit: (input: ExerciseInput) => Promise<void>;
 };
 
-const KIND_OPTIONS: { label: string; value: ExerciseKind }[] = [
-  { label: "Strength", value: "strength" },
-  { label: "Cardio", value: "cardio" },
-  { label: "Bodyweight", value: "bodyweight" },
+const KIND_OPTIONS: { label: string; value: ExerciseKind; dot: string }[] = [
+  { label: "Strength", value: "strength", dot: "bg-strength" },
+  { label: "Cardio", value: "cardio", dot: "bg-cardio" },
+  { label: "Bodyweight", value: "bodyweight", dot: "bg-bodyweight" },
 ];
+
+const labelClass =
+  "flex flex-col gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-fg-subtle";
+const fieldClass =
+  "rounded-lg border border-line-strong bg-surface-2 px-3 py-2.5 font-sans text-base normal-case tracking-normal text-fg placeholder:text-fg-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-soft";
 
 export function ExerciseForm({ initial, submitLabel, onSubmit }: Props) {
   const [name, setName] = useState(initial?.name ?? "");
@@ -54,80 +59,101 @@ export function ExerciseForm({ initial, submitLabel, onSubmit }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <label className="flex flex-col gap-1 text-sm">
+      <label className={labelClass}>
         Name
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="rounded-lg border border-gray-300 px-3 py-2 text-base"
+          className={fieldClass}
         />
       </label>
 
-      <fieldset className="flex flex-col gap-2 text-sm">
-        <legend>Kind</legend>
-        <div className="flex gap-1">
-          {KIND_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => setKind(opt.value)}
-              className={`flex-1 rounded-full px-3 py-1.5 text-sm font-medium ${
-                kind === opt.value ? "bg-black text-white" : "bg-gray-100 text-gray-700"
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
+      <fieldset className={labelClass}>
+        <legend className="mb-1.5">Kind</legend>
+        <div className="flex gap-1.5">
+          {KIND_OPTIONS.map((opt) => {
+            const active = kind === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setKind(opt.value)}
+                className={`flex flex-1 items-center justify-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] transition-colors ${
+                  active
+                    ? "border-accent bg-accent-soft text-accent"
+                    : "border-line-strong bg-surface-1 text-fg-muted hover:bg-surface-2 hover:text-fg"
+                }`}
+              >
+                <span aria-hidden className={`h-1.5 w-1.5 rounded-full ${opt.dot}`} />
+                {opt.label}
+              </button>
+            );
+          })}
         </div>
       </fieldset>
 
-      <fieldset className="flex flex-col gap-2 text-sm">
-        <legend>Muscle groups</legend>
+      <fieldset className={labelClass}>
+        <legend className="mb-1.5">Muscle groups</legend>
         <div className="flex flex-wrap gap-1.5">
-          {MUSCLE_GROUPS.map((mg) => (
-            <button
-              key={mg}
-              type="button"
-              onClick={() => toggle(mg)}
-              className={`rounded-full px-3 py-1 text-xs font-medium ${
-                selected.has(mg) ? "bg-black text-white" : "bg-gray-100 text-gray-700"
-              }`}
-            >
-              {formatMuscleGroup(mg)}
-            </button>
-          ))}
+          {MUSCLE_GROUPS.map((mg) => {
+            const active = selected.has(mg);
+            return (
+              <button
+                key={mg}
+                type="button"
+                onClick={() => toggle(mg)}
+                className={`rounded-full border px-3 py-1 text-xs font-medium normal-case tracking-normal transition-colors ${
+                  active
+                    ? "border-accent bg-accent-soft text-accent"
+                    : "border-line-strong bg-surface-1 text-fg-muted hover:bg-surface-2 hover:text-fg"
+                }`}
+              >
+                {formatMuscleGroup(mg)}
+              </button>
+            );
+          })}
         </div>
       </fieldset>
 
-      <label className="flex flex-col gap-1 text-sm">
-        Equipment <span className="text-gray-400">(optional)</span>
+      <label className={labelClass}>
+        <span>
+          Equipment{" "}
+          <span className="font-normal normal-case tracking-normal text-fg-faint">
+            (optional)
+          </span>
+        </span>
         <input
           type="text"
           value={equipment ?? ""}
           onChange={(e) => setEquipment(e.target.value)}
           placeholder="e.g. barbell, dumbbell, bodyweight"
-          className="rounded-lg border border-gray-300 px-3 py-2 text-base"
+          className={fieldClass}
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm">
-        Instructions <span className="text-gray-400">(optional)</span>
+      <label className={labelClass}>
+        <span>
+          Instructions{" "}
+          <span className="font-normal normal-case tracking-normal text-fg-faint">
+            (optional)
+          </span>
+        </span>
         <textarea
           value={instructions ?? ""}
           onChange={(e) => setInstructions(e.target.value)}
           rows={4}
-          className="rounded-lg border border-gray-300 px-3 py-2 text-base"
+          className={fieldClass + " resize-none"}
         />
       </label>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
 
       <button
         type="submit"
         disabled={submitting || !name.trim()}
-        className="mt-2 rounded-lg bg-black px-4 py-2 font-medium text-white disabled:opacity-60"
+        className="mt-2 rounded-lg bg-accent px-4 py-2.5 font-semibold text-accent-fg transition-colors hover:bg-accent-hover disabled:bg-surface-3 disabled:text-fg-faint"
       >
         {submitting ? "Saving…" : submitLabel}
       </button>

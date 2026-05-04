@@ -14,27 +14,27 @@ export function SessionsListPage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 pt-6 pb-8">
+    <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 pt-6 pb-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Sessions</h1>
-        <div className="flex items-center gap-1.5">
+        <h1 className="font-display text-3xl leading-none text-fg">Sessions</h1>
+        <div className="flex items-center gap-2">
           <SyncIndicator />
           <Link
             to="/settings"
             aria-label="Settings"
-            className="relative flex h-9 w-9 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100"
+            className="relative flex h-9 w-9 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-surface-2 hover:text-fg"
           >
             <Settings className="h-5 w-5" />
             {failedCount > 0 && (
-              <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-red-500" />
+              <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-danger" />
             )}
           </Link>
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
-            className="flex items-center gap-1 rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white"
+            className="flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4" strokeWidth={2.5} />
             New
           </button>
         </div>
@@ -42,7 +42,7 @@ export function SessionsListPage() {
 
       {sessions.length === 0 ? (
         <EmptyState icon={Dumbbell}>
-          No sessions yet. Tap <span className="font-medium">New</span> to start your first one.
+          No sessions yet. Tap <span className="font-medium text-fg">New</span> to start your first one.
         </EmptyState>
       ) : (
         <ul className="flex flex-col gap-2">

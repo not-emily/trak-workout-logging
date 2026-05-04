@@ -8,16 +8,24 @@ type Props = {
   height?: number;
   yFormatter?: (n: number) => string;
   xFormatter?: (d: Date) => string;
+  /** CSS color for the line + dots. Pass a kind color or accent. */
+  color?: string;
 };
 
 const VB_W = 600;
 const MARGIN = { top: 12, right: 16, bottom: 28, left: 44 };
 const MAX_X_TICKS = 5;
 
-export function LineChart({ data, height = 220, yFormatter, xFormatter }: Props) {
+export function LineChart({
+  data,
+  height = 220,
+  yFormatter,
+  xFormatter,
+  color = "var(--color-accent)",
+}: Props) {
   if (data.length === 0) {
     return (
-      <div className="flex h-44 items-center justify-center rounded-xl bg-gray-50 text-sm text-gray-500">
+      <div className="flex h-44 items-center justify-center rounded-xl border border-dashed border-line bg-surface-1/30 text-sm text-fg-muted">
         No data yet.
       </div>
     );
@@ -45,11 +53,9 @@ export function LineChart({ data, height = 220, yFormatter, xFormatter }: Props)
     .map((d, i) => `${i === 0 ? "M" : "L"}${xToPx(d.x).toFixed(2)},${yToPx(d.y).toFixed(2)}`)
     .join(" ");
 
-  // 4 horizontal gridlines spaced through the y range
   const yTicks: number[] = [];
   for (let i = 0; i <= 4; i++) yTicks.push(yMin + ((yMax - yMin) * i) / 4);
 
-  // ~5 evenly spaced x-axis labels by index
   const stride = Math.max(1, Math.ceil(data.length / MAX_X_TICKS));
   const xTicks: { value: Date; x: number }[] = [];
   for (let i = 0; i < data.length; i += stride) {
@@ -77,15 +83,15 @@ export function LineChart({ data, height = 220, yFormatter, xFormatter }: Props)
           yFormatter={yFormatter}
           xFormatter={xFormatter}
         />
-        <path d={path} stroke="#000" strokeWidth={2} fill="none" strokeLinejoin="round" />
+        <path d={path} stroke={color} strokeWidth={2} fill="none" strokeLinejoin="round" />
         {data.map((d, i) => (
           <circle
             key={i}
             cx={xToPx(d.x)}
             cy={yToPx(d.y)}
             r={2.5}
-            fill="#fff"
-            stroke="#000"
+            fill="var(--color-bg)"
+            stroke={color}
             strokeWidth={1.5}
           />
         ))}
@@ -97,6 +103,7 @@ export function LineChart({ data, height = 220, yFormatter, xFormatter }: Props)
           yToPx={yToPx}
           yFormatter={yFormatter}
           xFormatter={xFormatter}
+          color={color}
         />
       </g>
     </svg>

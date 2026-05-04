@@ -31,20 +31,23 @@ export function ConfirmDialog({
         type="button"
         onClick={onCancel}
         aria-label="Close"
-        className="absolute inset-0 bg-black/40"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
       />
-      <div className="relative w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl">
+      <div className="relative w-full max-w-sm rounded-2xl border border-line-strong bg-surface-1 p-5 shadow-[0_24px_64px_rgba(0,0,0,0.6)]">
         <div className="flex items-start gap-3">
           <div
             className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
-              isDanger ? "bg-red-50" : "bg-gray-100"
+              isDanger ? "bg-danger-soft" : "bg-surface-2"
             }`}
           >
-            <AlertTriangle className={`h-4 w-4 ${isDanger ? "text-red-600" : "text-gray-700"}`} />
+            <AlertTriangle
+              className={`h-4 w-4 ${isDanger ? "text-danger" : "text-fg-muted"}`}
+              strokeWidth={2.5}
+            />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-base font-semibold text-gray-900">{title}</h3>
-            <div className="mt-1 text-sm text-gray-600">{message}</div>
+            <h3 className="text-base font-semibold text-fg">{title}</h3>
+            <div className="mt-1 text-sm text-fg-muted">{message}</div>
           </div>
         </div>
 
@@ -52,15 +55,17 @@ export function ConfirmDialog({
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
+            className="rounded-lg px-3 py-2 text-sm font-medium text-fg-muted transition-colors hover:bg-surface-2 hover:text-fg"
           >
             {cancelLabel}
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium text-white shadow-sm ${
-              isDanger ? "bg-red-600 hover:bg-red-700" : "bg-black hover:bg-gray-800"
+            className={`flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+              isDanger
+                ? "bg-danger text-fg hover:opacity-90"
+                : "bg-accent text-accent-fg hover:bg-accent-hover"
             }`}
           >
             {confirmLabel}

@@ -30,11 +30,14 @@ export function ExerciseFormPage() {
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-4 px-4 pt-6 pb-8">
-      <Link to="/exercises" className="flex items-center gap-1 text-sm text-gray-600">
-        <ArrowLeft className="h-4 w-4" />
+      <Link
+        to="/exercises"
+        className="flex w-fit items-center gap-1 text-xs font-semibold uppercase tracking-[0.18em] text-fg-subtle transition-colors hover:text-fg-muted"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
         Back
       </Link>
-      <h1 className="text-2xl font-semibold">
+      <h1 className="font-display text-3xl leading-none text-fg">
         {isNew ? "New custom exercise" : "Edit exercise"}
       </h1>
       {(isNew || existing) && (

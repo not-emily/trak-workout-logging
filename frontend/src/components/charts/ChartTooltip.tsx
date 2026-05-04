@@ -9,6 +9,7 @@ type Props = {
   yToPx: (n: number) => number;
   yFormatter?: (n: number) => string;
   xFormatter?: (d: Date) => string;
+  color?: string;
 };
 
 export function ChartTooltip({
@@ -19,6 +20,7 @@ export function ChartTooltip({
   yToPx,
   yFormatter,
   xFormatter,
+  color = "var(--color-accent)",
 }: Props) {
   const [active, setActive] = useState<number | null>(null);
   const fmtY = yFormatter ?? ((n: number) => n.toLocaleString());
@@ -60,19 +62,23 @@ export function ChartTooltip({
             x2={xToPx(point.x)}
             y1={0}
             y2={chartH}
-            stroke="#9ca3af"
+            stroke="var(--color-line-strong)"
             strokeDasharray="3 3"
           />
-          <circle cx={xToPx(point.x)} cy={yToPx(point.y)} r={5} fill="#000" />
+          <circle cx={xToPx(point.x)} cy={yToPx(point.y)} r={5} fill={color} />
           <foreignObject
             x={Math.min(Math.max(xToPx(point.x) - 70, 0), chartW - 140)}
-            y={Math.max(yToPx(point.y) - 48, 0)}
+            y={Math.max(yToPx(point.y) - 50, 0)}
             width={140}
-            height={44}
+            height={46}
           >
-            <div className="rounded-md bg-gray-900 px-2 py-1 text-center text-xs leading-tight text-white shadow-md">
-              <div className="font-semibold">{fmtY(point.y)}</div>
-              <div className="text-gray-300">{point.label ?? fmtX(point.x)}</div>
+            <div className="rounded-md border border-line-strong bg-surface-1 px-2 py-1 text-center leading-tight shadow-lg">
+              <div className="font-mono text-xs font-medium tabular-nums text-fg">
+                {fmtY(point.y)}
+              </div>
+              <div className="text-[10px] uppercase tracking-wide text-fg-subtle">
+                {point.label ?? fmtX(point.x)}
+              </div>
             </div>
           </foreignObject>
         </>

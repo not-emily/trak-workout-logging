@@ -35,42 +35,62 @@ export function MetricDetailPage() {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pt-6 pb-8">
-      <Link to="/body" className="flex items-center gap-1 text-sm text-gray-600">
-        <ArrowLeft className="h-4 w-4" />
+      <Link
+        to="/body"
+        className="flex w-fit items-center gap-1 text-xs font-semibold uppercase tracking-[0.18em] text-fg-subtle transition-colors hover:text-fg-muted"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
         Back
       </Link>
 
       <div className="flex items-start justify-between gap-3">
-        <h1 className="text-2xl font-semibold">{formatMetricLabel(validMetric)}</h1>
+        <div className="flex min-w-0 flex-col gap-1">
+          <h1 className="truncate font-display text-3xl leading-none text-fg-soft">
+            {formatMetricLabel(validMetric)}
+          </h1>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-body-accent">
+            Body metric
+          </span>
+        </div>
         <button
           type="button"
           onClick={() => setLogOpen(true)}
-          className="flex items-center gap-1 rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white"
+          className="flex shrink-0 items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-4 w-4" strokeWidth={2.5} />
           Log
         </button>
       </div>
 
       {points.length > 0 && (
-        <div className="rounded-xl bg-white p-3 ring-1 ring-gray-200">
-          <LineChart data={points} yFormatter={(n) => `${n} ${unit}`} />
+        <div className="rounded-xl border border-line bg-surface-1 p-3">
+          <LineChart
+            data={points}
+            yFormatter={(n) => `${n} ${unit}`}
+            color="var(--color-body-accent)"
+          />
         </div>
       )}
 
-      <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-gray-700">History</h2>
+      <section className="mt-2 flex flex-col gap-3">
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-fg-subtle">
+          History
+        </h2>
         {measurements.length === 0 ? (
-          <p className="text-sm text-gray-500">No entries yet.</p>
+          <p className="text-sm text-fg-muted">No entries yet.</p>
         ) : (
           <ul className="flex flex-col gap-1.5">
             {measurements.map((m) => (
               <li key={m.id}>
                 <Swipeable
-                  left={{ icon: Trash2, bg: "bg-red-600", onTrigger: () => deleteMeasurement(m.id) }}
+                  left={{
+                    icon: Trash2,
+                    bg: "bg-danger",
+                    onTrigger: () => deleteMeasurement(m.id),
+                  }}
                 >
-                  <div className="flex items-center justify-between gap-3 rounded-lg bg-white p-3 ring-1 ring-gray-200">
-                    <span className="text-sm text-gray-500">
+                  <div className="flex items-center justify-between gap-3 rounded-lg border border-line bg-surface-1 p-3">
+                    <span className="font-mono text-[11px] uppercase tracking-wide text-fg-muted">
                       {new Date(m.recordedAt).toLocaleString(undefined, {
                         month: "short",
                         day: "numeric",
@@ -78,8 +98,11 @@ export function MetricDetailPage() {
                         minute: "2-digit",
                       })}
                     </span>
-                    <span className="text-base font-semibold text-gray-900">
-                      {m.value} <span className="text-sm font-normal text-gray-500">{m.unit}</span>
+                    <span className="flex items-baseline gap-1.5">
+                      <span className="font-mono text-base font-medium text-fg-soft tabular-nums">
+                        {m.value}
+                      </span>
+                      <span className="font-mono text-xs uppercase text-fg-muted">{m.unit}</span>
                     </span>
                   </div>
                 </Swipeable>
@@ -93,6 +116,7 @@ export function MetricDetailPage() {
         open={logOpen}
         onClose={() => setLogOpen(false)}
         initialMetric={validMetric}
+        maxWidth="md:max-w-3xl"
       />
     </div>
   );

@@ -35,14 +35,14 @@ export function MeatballMenu({ items, ariaLabel = "Open menu" }: Props) {
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((s) => !s)}
-        className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100"
+        className="flex h-9 w-9 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-surface-2 hover:text-fg"
       >
         <MoreHorizontal className="h-4 w-4" />
       </button>
       {open && (
         <ul
           role="menu"
-          className="absolute right-0 top-full z-30 mt-1 min-w-[10rem] overflow-hidden rounded-lg bg-white py-1 shadow-lg ring-1 ring-gray-200"
+          className="absolute right-0 top-full z-30 mt-1 min-w-[10rem] overflow-hidden rounded-lg border border-line-strong bg-surface-1 py-1 shadow-[0_8px_24px_rgba(0,0,0,0.5)]"
         >
           {items.map((item) => {
             const Icon = item.icon;
@@ -56,8 +56,8 @@ export function MeatballMenu({ items, ariaLabel = "Open menu" }: Props) {
                     item.onClick();
                     setOpen(false);
                   }}
-                  className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-gray-50 ${
-                    danger ? "text-red-600" : "text-gray-700"
+                  className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-surface-2 ${
+                    danger ? "text-danger" : "text-fg-muted hover:text-fg"
                   }`}
                 >
                   {Icon && <Icon className="h-4 w-4" />}

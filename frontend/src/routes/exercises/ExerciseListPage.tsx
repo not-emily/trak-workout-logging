@@ -29,27 +29,27 @@ export function ExerciseListPage() {
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 pt-6 pb-8">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold">Exercises</h1>
-        <div className="flex items-center gap-1.5">
+        <h1 className="font-display text-3xl leading-none text-fg">Exercises</h1>
+        <div className="flex items-center gap-2">
           <SyncIndicator />
           <Link
             to="/exercises/new"
-            className="flex items-center gap-1 rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white"
+            className="flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4" strokeWidth={2.5} />
             New
           </Link>
         </div>
       </div>
 
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-faint" />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search exercises..."
-          className="w-full rounded-full bg-gray-100 py-2 pl-10 pr-4 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
+          className="w-full rounded-full border border-line-strong bg-surface-1 py-2 pl-10 pr-4 text-sm text-fg placeholder:text-fg-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-soft"
         />
       </div>
 

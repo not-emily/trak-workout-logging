@@ -16,6 +16,18 @@ type Props = {
   onComplete?: () => void;
 };
 
+const KIND_SOFT_BG: Record<Exercise["kind"], string> = {
+  strength: "bg-strength-soft",
+  cardio: "bg-cardio-soft",
+  bodyweight: "bg-bodyweight-soft",
+};
+
+const KIND_STRIPE_BG: Record<Exercise["kind"], string> = {
+  strength: "bg-strength",
+  cardio: "bg-cardio",
+  bodyweight: "bg-bodyweight",
+};
+
 function isSetEmpty(set: WorkoutSet): boolean {
   return (
     set.reps == null &&
@@ -31,9 +43,6 @@ export function SetRow({ set, index, exerciseKind, suppressRestTimer, readOnly =
   const [duration, setDuration] = useState(set.durationSeconds?.toString() ?? "");
   const [distance, setDistance] = useState(set.distanceMeters ?? "");
 
-  // Brand-new empty rows open in edit mode so the user can type immediately.
-  // Pre-filled rows start in read mode — the pre-fill is usually the answer.
-  // Read-only mode never enters edit, regardless of state.
   const [editing, setEditing] = useState(() => !readOnly && isSetEmpty(set));
   const rowRef = useRef<HTMLDivElement>(null);
 
@@ -76,7 +85,6 @@ export function SetRow({ set, index, exerciseKind, suppressRestTimer, readOnly =
     setEditing(false);
   }
 
-  // Commit + collapse when the user taps anywhere outside the row.
   useEffect(() => {
     if (!editing) return;
     function handler(e: MouseEvent) {
@@ -96,32 +104,39 @@ export function SetRow({ set, index, exerciseKind, suppressRestTimer, readOnly =
     }
   }
 
+  const completedBg = KIND_SOFT_BG[exerciseKind];
+  const stripeBg = KIND_STRIPE_BG[exerciseKind];
+
   return (
     <Swipeable
       enabled={!editing && !readOnly}
       right={
         !readOnly && !isCompleted && !isSetEmpty(set)
-          ? { icon: Check, bg: "bg-green-600", onTrigger: toggleComplete }
+          ? { icon: Check, bg: stripeBg, onTrigger: toggleComplete }
           : undefined
       }
-      left={!readOnly ? { icon: Trash2, bg: "bg-red-600", onTrigger: () => removeSet(set.id) } : undefined}
+      left={!readOnly ? { icon: Trash2, bg: "bg-danger", onTrigger: () => removeSet(set.id) } : undefined}
     >
       <div
         ref={rowRef}
         onClick={() => !editing && !readOnly && setEditing(true)}
-        className={`flex items-center gap-2 rounded-lg p-2 transition-colors ${
+        className={`relative flex items-center gap-2 overflow-hidden rounded-lg p-2 transition-colors ${
           editing
-            ? "bg-white ring-2 ring-black"
+            ? "bg-surface-2 ring-2 ring-accent"
             : isCompleted
-              ? "bg-green-50"
-              : "bg-gray-50"
+              ? completedBg
+              : "bg-surface-2/40"
         } ${!editing && !readOnly ? "cursor-pointer" : ""}`}
       >
+        {isCompleted && (
+          <span aria-hidden className={`absolute inset-y-0 left-0 w-[3px] ${stripeBg}`} />
+        )}
+
         <span className="flex w-9 shrink-0 flex-col items-center leading-none">
-          <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+          <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-fg-subtle">
             Set
           </span>
-          <span className="mt-0.5 text-sm font-semibold text-gray-700">{index + 1}</span>
+          <span className="mt-0.5 font-mono text-sm font-medium text-fg-muted">{index + 1}</span>
         </span>
 
         {editing ? (
@@ -155,7 +170,7 @@ export function SetRow({ set, index, exerciseKind, suppressRestTimer, readOnly =
               e.stopPropagation();
               commitAndCollapse();
             }}
-            className="ml-auto rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white"
+            className="ml-auto rounded-full bg-accent px-3 py-1.5 text-xs font-semibold text-accent-fg"
           >
             Done
           </button>
@@ -169,10 +184,12 @@ export function SetRow({ set, index, exerciseKind, suppressRestTimer, readOnly =
             }}
             aria-label={isCompleted ? "Uncomplete set" : "Complete set"}
             className={`ml-auto flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors disabled:cursor-default ${
-              isCompleted ? "bg-green-600 text-white" : "bg-white text-gray-400 ring-1 ring-gray-300"
+              isCompleted
+                ? `${stripeBg} text-bg`
+                : "border border-line-strong bg-surface-1 text-fg-faint hover:border-accent hover:text-accent"
             }`}
           >
-            <Check className="h-4 w-4" />
+            <Check className="h-4 w-4" strokeWidth={isCompleted ? 3 : 2} />
           </button>
         )}
       </div>
@@ -222,28 +239,37 @@ function ReadValues(props: {
   duration: string;
   distance: string;
 }) {
-  const dash = <span className="text-gray-400">—</span>;
+  const dash = <span className="text-fg-faint">—</span>;
+  const num = (v: string) => (
+    <span className="font-mono text-base font-medium text-fg tabular-nums">{v}</span>
+  );
+  const unit = (label: string) => (
+    <span className="text-xs text-fg-muted">{label}</span>
+  );
+  const sep = <span className="px-1.5 text-fg-faint">·</span>;
+
   if (props.kind === "strength") {
     return (
-      <span className="text-sm text-gray-700">
-        {props.weight ? <strong className="font-semibold text-gray-900">{props.weight}</strong> : dash} lb
-        <span className="px-2 text-gray-400">×</span>
-        {props.reps ? <strong className="font-semibold text-gray-900">{props.reps}</strong> : dash} reps
+      <span className="flex flex-1 items-baseline gap-1">
+        {props.weight ? num(props.weight) : dash} {unit("lb")}
+        {sep}
+        {props.reps ? num(props.reps) : dash} {unit("reps")}
       </span>
     );
   }
   if (props.kind === "bodyweight") {
     return (
-      <span className="text-sm text-gray-700">
-        {props.reps ? <strong className="font-semibold text-gray-900">{props.reps}</strong> : dash} reps
+      <span className="flex flex-1 items-baseline gap-1">
+        {props.reps ? num(props.reps) : dash} {unit("reps")}
       </span>
     );
   }
   return (
-    <span className="text-sm text-gray-700">
-      {props.duration ? <strong className="font-semibold text-gray-900">{props.duration}</strong> : dash}s
-      <span className="px-2 text-gray-400">·</span>
-      {props.distance ? <strong className="font-semibold text-gray-900">{props.distance}</strong> : dash} m
+    <span className="flex flex-1 items-baseline gap-1">
+      {props.duration ? num(props.duration) : dash}
+      {unit("s")}
+      {sep}
+      {props.distance ? num(props.distance) : dash} {unit("m")}
     </span>
   );
 }
@@ -269,7 +295,7 @@ function NumberField(props: {
       onClick={(e) => e.stopPropagation()}
       placeholder={props.placeholder}
       autoFocus={props.autoFocus}
-      className={`rounded-md bg-white px-2 py-1.5 text-center text-base ring-1 ring-gray-300 focus:outline-none focus:ring-2 focus:ring-black ${props.className ?? ""}`}
+      className={`rounded-md border border-line-strong bg-surface-1 px-2 py-1.5 text-center font-mono text-base text-fg tabular-nums placeholder:text-fg-faint focus:border-accent focus:outline-none ${props.className ?? ""}`}
     />
   );
 }

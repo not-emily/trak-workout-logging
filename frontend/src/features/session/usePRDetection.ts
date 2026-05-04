@@ -47,47 +47,55 @@ function priorHistoryFor(
   return result;
 }
 
-function formatPRToast(exerciseName: string, pr: BrokenPR): { title: string; body: string } {
+function formatPRToast(
+  exerciseName: string,
+  pr: BrokenPR,
+): { title: string; value: string; body?: string } {
   switch (pr.type) {
     case "heaviestWeight":
       return {
         title: `New PR · ${exerciseName}`,
-        body: `${pr.weightLb} lb × ${pr.reps}${pr.previous != null ? ` — beats ${pr.previous} lb` : ""}`,
+        value: `${pr.weightLb} lb × ${pr.reps}`,
+        body: pr.previous != null ? `beats ${pr.previous} lb` : undefined,
       };
     case "bestByReps":
       return {
-        title: `New ${pr.bucket}-rep PR · ${exerciseName}`,
-        body: `${pr.weightLb} lb${pr.previous != null ? ` — beats ${pr.previous} lb` : ""}`,
+        title: `${pr.bucket}-rep PR · ${exerciseName}`,
+        value: `${pr.weightLb} lb`,
+        body: pr.previous != null ? `beats ${pr.previous} lb` : undefined,
       };
     case "bestEstimated1RM":
       return {
-        title: `New est. 1RM · ${exerciseName}`,
-        body: `${Math.round(pr.estimated)} lb (${pr.weightLb} × ${pr.reps})`,
+        title: `Est. 1RM · ${exerciseName}`,
+        value: `${Math.round(pr.estimated)} lb`,
+        body: `from ${pr.weightLb} × ${pr.reps}`,
       };
     case "highestVolumeSet":
       return {
         title: `Heaviest set · ${exerciseName}`,
-        body: `${pr.weightLb} lb × ${pr.reps} = ${Math.round(pr.volume).toLocaleString()} lb`,
+        value: `${Math.round(pr.volume).toLocaleString()} lb`,
+        body: `${pr.weightLb} × ${pr.reps}`,
       };
     case "mostReps":
       return {
         title: `New PR · ${exerciseName}`,
-        body: `${pr.reps} reps${pr.previous != null ? ` — beats ${pr.previous}` : ""}`,
+        value: `${pr.reps} reps`,
+        body: pr.previous != null ? `beats ${pr.previous}` : undefined,
       };
     case "longestDistance":
       return {
         title: `Longest distance · ${exerciseName}`,
-        body: `${pr.distanceMeters.toLocaleString()} m`,
+        value: `${pr.distanceMeters.toLocaleString()} m`,
       };
     case "longestDuration":
       return {
         title: `Longest duration · ${exerciseName}`,
-        body: formatDuration(pr.durationSeconds),
+        value: formatDuration(pr.durationSeconds),
       };
     case "fastestPace":
       return {
         title: `Fastest pace · ${exerciseName}`,
-        body: `${formatDuration(Math.round(pr.secondsPerMeter * 1000))} / km`,
+        value: `${formatDuration(Math.round(pr.secondsPerMeter * 1000))} / km`,
       };
   }
 }
@@ -155,8 +163,8 @@ export function usePRDetection(session: AssembledSession | null | undefined): vo
         // Keep it on the PR cards (useful data) but skip the toast (noise).
         for (const pr of broken) {
           if (pr.type === "bestByReps") continue;
-          const { title, body } = formatPRToast(exercise.name, pr);
-          toast.show({ title, body, variant: "success" });
+          const { title, value, body } = formatPRToast(exercise.name, pr);
+          toast.show({ title, value, body, variant: "achievement" });
         }
 
         // Append to history so subsequent sets in this session have to beat it.

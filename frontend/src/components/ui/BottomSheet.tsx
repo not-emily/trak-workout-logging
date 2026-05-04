@@ -9,6 +9,12 @@ type Props = {
   children: ReactNode;
   /** Set to false when the sheet body manages its own scrolling. */
   bodyScroll?: boolean;
+  /**
+   * Tailwind responsive max-width class applied on `md+`. Pass the page's
+   * own max-w (e.g. `md:max-w-3xl`) so the sheet matches the content column.
+   * Defaults to `md:max-w-md` for narrow forms.
+   */
+  maxWidth?: string;
 };
 
 const springTransition = {
@@ -17,7 +23,14 @@ const springTransition = {
   damping: 30,
 };
 
-export function BottomSheet({ open, onClose, title, children, bodyScroll = true }: Props) {
+export function BottomSheet({
+  open,
+  onClose,
+  title,
+  children,
+  bodyScroll = true,
+  maxWidth = "md:max-w-md",
+}: Props) {
   return (
     <AnimatePresence>
       {open && (
@@ -34,15 +47,16 @@ export function BottomSheet({ open, onClose, title, children, bodyScroll = true 
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={springTransition}
-            className="fixed bottom-0 left-0 right-0 z-[60] flex max-h-[80vh] flex-col rounded-t-2xl bg-white pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-xl"
+            className={`fixed inset-x-0 bottom-0 z-[60] mx-auto flex max-h-[80vh] flex-col rounded-t-2xl border-t border-line-strong bg-surface-1 pb-[calc(env(safe-area-inset-bottom)+1rem)] shadow-[0_-12px_40px_rgba(0,0,0,0.5)] md:bottom-6 md:rounded-2xl md:border ${maxWidth}`}
           >
-            <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-              <h2 className="text-lg font-semibold">{title}</h2>
+            <div aria-hidden className="mx-auto mt-2 h-1 w-9 rounded-full bg-fg-disabled" />
+            <div className="flex items-center justify-between border-b border-line px-4 py-3">
+              <h2 className="text-base font-semibold text-fg">{title}</h2>
               <button
                 type="button"
                 onClick={onClose}
                 aria-label="Close"
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-2 text-fg-muted transition-colors hover:bg-surface-3 hover:text-fg"
               >
                 <X className="h-4 w-4" />
               </button>

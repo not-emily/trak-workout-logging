@@ -12,14 +12,15 @@ export function RoutineCard({ routine }: Props) {
   return (
     <Link
       to={`/routines/${routine.id}`}
-      className="flex flex-col gap-1 rounded-xl border border-gray-200 bg-white p-4 transition-colors hover:bg-gray-50"
+      className="group flex flex-col gap-1 rounded-xl border border-line bg-surface-1 p-4 transition-colors hover:border-line-strong hover:bg-surface-2"
     >
-      <h3 className="font-medium text-gray-900">{routine.name}</h3>
+      <h3 className="font-display text-base text-fg-soft">{routine.name}</h3>
       {routine.description && (
-        <p className="text-sm text-gray-600">{routine.description}</p>
+        <p className="text-sm text-fg-muted">{routine.description}</p>
       )}
-      <p className="text-xs text-gray-500">
-        {exerciseCount} {exerciseCount === 1 ? "exercise" : "exercises"}
+      <p className="text-[11px] text-fg-faint">
+        <span className="font-mono font-medium text-fg-muted tabular-nums">{exerciseCount}</span>{" "}
+        {exerciseCount === 1 ? "exercise" : "exercises"}
       </p>
     </Link>
   );

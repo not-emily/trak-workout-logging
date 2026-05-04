@@ -4,6 +4,13 @@ import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { deleteExercise, useExercises } from "@/features/exercise/useExercises";
 import { formatMuscleGroup } from "@/lib/muscleGroups";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import type { Exercise } from "@/types/exercise";
+
+const KIND_DOT_BG: Record<Exercise["kind"], string> = {
+  strength: "bg-strength",
+  cardio: "bg-cardio",
+  bodyweight: "bg-bodyweight",
+};
 
 export function ExerciseDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -20,35 +27,54 @@ export function ExerciseDetailPage() {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pt-6 pb-8">
-      <Link to="/exercises" className="flex items-center gap-1 text-sm text-gray-600">
-        <ArrowLeft className="h-4 w-4" />
+      <Link
+        to="/exercises"
+        className="flex w-fit items-center gap-1 text-xs font-semibold uppercase tracking-[0.18em] text-fg-subtle transition-colors hover:text-fg-muted"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
         Back
       </Link>
 
       <div className="flex items-start justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold">{exercise.name}</h1>
-          <div className="flex flex-wrap gap-1.5 text-xs text-gray-500">
-            <span className="capitalize">{exercise.kind}</span>
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <div className="flex items-center gap-2.5">
+            <span
+              aria-hidden
+              className={`h-2 w-2 shrink-0 rounded-full ${KIND_DOT_BG[exercise.kind]}`}
+            />
+            <h1 className="truncate font-display text-3xl leading-none text-fg-soft">
+              {exercise.name}
+            </h1>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5 pl-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-fg-subtle">
+            <span>{exercise.kind}</span>
             {exercise.equipment && (
               <>
-                <span aria-hidden="true">•</span>
-                <span>{exercise.equipment}</span>
+                <span aria-hidden className="text-fg-faint">
+                  ·
+                </span>
+                <span className="font-medium normal-case tracking-normal text-fg-muted">
+                  {exercise.equipment}
+                </span>
               </>
             )}
             {exercise.level && (
               <>
-                <span aria-hidden="true">•</span>
-                <span className="capitalize">{exercise.level}</span>
+                <span aria-hidden className="text-fg-faint">
+                  ·
+                </span>
+                <span className="font-medium normal-case tracking-normal text-fg-muted">
+                  {exercise.level}
+                </span>
               </>
             )}
           </div>
         </div>
         {canEdit && (
-          <div className="flex gap-2">
+          <div className="flex shrink-0 gap-2">
             <Link
               to={`/exercises/${exercise.id}/edit`}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-700"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 text-fg-muted transition-colors hover:bg-surface-3 hover:text-fg"
               aria-label="Edit"
             >
               <Pencil className="h-4 w-4" />
@@ -56,7 +82,7 @@ export function ExerciseDetailPage() {
             <button
               type="button"
               onClick={() => setConfirmDelete(true)}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-red-50 text-red-600"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-danger-soft text-danger transition-colors hover:bg-danger hover:text-fg"
               aria-label="Delete"
             >
               <Trash2 className="h-4 w-4" />
@@ -67,12 +93,14 @@ export function ExerciseDetailPage() {
 
       {exercise.muscleGroups.length > 0 && (
         <section className="flex flex-col gap-2">
-          <h2 className="text-sm font-medium text-gray-700">Muscle groups</h2>
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-fg-subtle">
+            Muscle groups
+          </h2>
           <div className="flex flex-wrap gap-1.5">
             {exercise.muscleGroups.map((mg) => (
               <span
                 key={mg}
-                className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700"
+                className="rounded-full border border-line-strong bg-surface-1 px-3 py-1 text-xs font-medium text-fg-soft"
               >
                 {formatMuscleGroup(mg)}
               </span>
@@ -83,8 +111,10 @@ export function ExerciseDetailPage() {
 
       {exercise.instructions && (
         <section className="flex flex-col gap-2">
-          <h2 className="text-sm font-medium text-gray-700">Instructions</h2>
-          <p className="whitespace-pre-line text-sm leading-6 text-gray-700">
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-fg-subtle">
+            Instructions
+          </h2>
+          <p className="whitespace-pre-line text-sm leading-6 text-fg-muted">
             {exercise.instructions}
           </p>
         </section>

@@ -3,6 +3,9 @@
 
 const TOKEN_KEY = "trak.auth.token";
 const USER_KEY = "trak.auth.user";
+// Records which user the local data buckets belong to. Used to wipe the
+// store when a *different* user logs in on this device. Survives clearToken.
+const DATA_OWNER_KEY = "trak.data.owner";
 
 export type AuthSnapshot = {
   token: string | null;
@@ -56,6 +59,18 @@ export function getCachedUser(): unknown | null {
 export function setCachedUser(user: unknown): void {
   localStorage.setItem(USER_KEY, JSON.stringify(user));
   emitChange();
+}
+
+export function getDataOwner(): string | null {
+  return localStorage.getItem(DATA_OWNER_KEY);
+}
+
+export function setDataOwner(userId: string): void {
+  localStorage.setItem(DATA_OWNER_KEY, userId);
+}
+
+export function clearDataOwner(): void {
+  localStorage.removeItem(DATA_OWNER_KEY);
 }
 
 // --- Subscription ---

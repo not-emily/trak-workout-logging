@@ -35,22 +35,28 @@ export function useGoalAchievementDetection(): void {
       if (!p || !p.isAchieved) continue;
       seenAchievedRef.current.add(g.id);
       markGoalAchieved(g.id);
+      const { value, body } = formatGoalAchievement(g.targetType, p.current, p.target, g.unit);
       toast.show({
-        variant: "success",
+        variant: "achievement",
         title: `Goal achieved · ${g.name}`,
-        body: formatBody(g.targetType, p.current, p.target, g.unit),
+        value,
+        body,
       });
     }
   }, [goals, progresses]);
 }
 
-function formatBody(
+function formatGoalAchievement(
   targetType: "lift" | "body" | "frequency",
   current: number,
   target: number,
   unit: string,
-): string {
-  if (targetType === "lift") return `Hit ${Math.round(current)} ${unit} (target ${target} ${unit})`;
-  if (targetType === "frequency") return `${current} of ${target} ${unit} this week`;
-  return `${current} ${unit} (target ${target} ${unit})`;
+): { value: string; body: string } {
+  if (targetType === "lift") {
+    return { value: `${Math.round(current)} ${unit}`, body: `target ${target} ${unit}` };
+  }
+  if (targetType === "frequency") {
+    return { value: `${current} ${unit}`, body: `target ${target} this week` };
+  }
+  return { value: `${current} ${unit}`, body: `target ${target} ${unit}` };
 }

@@ -16,10 +16,12 @@ function fmtDate(d: Date): string {
 
 function Card({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="flex flex-col gap-0.5 rounded-xl bg-white p-3 ring-1 ring-gray-200">
-      <span className="text-xs font-medium uppercase tracking-wide text-gray-500">{label}</span>
-      <span className="text-lg font-semibold text-gray-900">{value}</span>
-      {sub && <span className="text-xs text-gray-500">{sub}</span>}
+    <div className="flex flex-col gap-1 rounded-xl border border-line bg-surface-1 p-3.5">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gold">
+        {label}
+      </span>
+      <span className="font-display text-lg leading-none text-fg-soft tabular">{value}</span>
+      {sub && <span className="text-[11px] text-fg-muted">{sub}</span>}
     </div>
   );
 }
@@ -96,7 +98,11 @@ function CardioPRCards({ prs }: { prs: Extract<ExercisePRs, { kind: "cardio" }> 
 
 function Grid({ cards }: { cards: { label: string; value: string; sub?: string }[] }) {
   if (cards.length === 0) {
-    return <p className="text-sm text-gray-500">No PRs yet — log a few sets to see records here.</p>;
+    return (
+      <p className="text-sm text-fg-muted">
+        No PRs yet — log a few sets to see records here.
+      </p>
+    );
   }
   return (
     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">

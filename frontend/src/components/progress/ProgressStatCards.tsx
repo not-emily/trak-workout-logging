@@ -71,13 +71,23 @@ function HeroCard({
   sub: string;
 }) {
   return (
-    <div className="flex flex-col items-center gap-1 rounded-xl bg-white p-4 text-center ring-1 ring-gray-200 sm:items-start sm:text-left">
-      <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-500">
-        <Icon className="h-3.5 w-3.5" />
-        {label}
+    <div className="relative overflow-hidden rounded-xl border border-gold/25 bg-surface-1 p-4">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-50"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 100% at 0% 0%, var(--color-gold-soft), transparent 60%)",
+        }}
+      />
+      <div className="relative flex flex-col items-center gap-1.5 text-center sm:items-start sm:text-left">
+        <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-gold">
+          <Icon className="h-3 w-3" strokeWidth={2.5} />
+          {label}
+        </div>
+        <div className="font-display text-2xl leading-none text-fg tabular">{value}</div>
+        <div className="truncate text-[11px] text-fg-muted">{sub}</div>
       </div>
-      <div className="text-2xl font-semibold text-gray-900">{value}</div>
-      <div className="truncate text-xs text-gray-500">{sub}</div>
     </div>
   );
 }
@@ -94,13 +104,13 @@ function SmallCard({
   sub: string;
 }) {
   return (
-    <div className="flex flex-col items-center gap-0.5 rounded-xl bg-white p-3 text-center ring-1 ring-gray-200 sm:items-start sm:text-left">
-      <div className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-gray-500">
-        <Icon className="h-3 w-3" />
+    <div className="flex flex-col items-center gap-0.5 rounded-xl border border-line bg-surface-1 p-3 text-center sm:items-start sm:text-left">
+      <div className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-subtle">
+        <Icon className="h-3 w-3" strokeWidth={2.5} />
         {label}
       </div>
-      <div className="text-xl font-semibold text-gray-900">{value}</div>
-      <div className="text-[10px] text-gray-500">{sub}</div>
+      <div className="font-display text-xl leading-none text-fg-soft tabular">{value}</div>
+      <div className="text-[10px] text-fg-faint">{sub}</div>
     </div>
   );
 }

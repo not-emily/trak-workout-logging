@@ -44,7 +44,7 @@ export function RoutineDetailPage() {
 
   if (!id) return <Navigate to="/routines" replace />;
   if (!routine) {
-    return <p className="p-6 text-sm text-gray-500">Routine not found.</p>;
+    return <p className="p-6 text-sm text-fg-muted">Routine not found.</p>;
   }
 
   function findExercise(exerciseId: string) {
@@ -101,8 +101,11 @@ export function RoutineDetailPage() {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pt-6 pb-8">
-      <Link to="/routines" className="flex items-center gap-1 text-sm text-gray-600">
-        <ArrowLeft className="h-4 w-4" />
+      <Link
+        to="/routines"
+        className="flex w-fit items-center gap-1 text-xs font-semibold uppercase tracking-[0.18em] text-fg-subtle transition-colors hover:text-fg-muted"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
         Back
       </Link>
 
@@ -119,13 +122,13 @@ export function RoutineDetailPage() {
               }}
               autoFocus
               autoComplete="off"
-              className="w-full rounded-md bg-gray-100 px-2 py-1 text-2xl font-semibold focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full rounded-md bg-surface-2 px-2 py-1 font-display text-3xl text-fg ring-2 ring-accent focus:outline-none"
             />
           ) : (
             <button
               type="button"
               onClick={startEditingName}
-              className="truncate text-left text-2xl font-semibold text-gray-900"
+              className="truncate text-left font-display text-3xl leading-none text-fg-soft"
             >
               {routine.name}
             </button>
@@ -139,16 +142,16 @@ export function RoutineDetailPage() {
               autoFocus
               rows={2}
               placeholder="Description"
-              className="w-full rounded-md bg-gray-100 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full rounded-md border border-line-strong bg-surface-2 px-2 py-1.5 text-sm text-fg placeholder:text-fg-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-soft"
             />
           ) : (
             <button
               type="button"
               onClick={startEditingDescription}
-              className="text-left text-sm text-gray-600"
+              className="text-left text-sm text-fg-muted transition-colors hover:text-fg"
             >
               {routine.description || (
-                <span className="text-gray-400">Add description</span>
+                <span className="text-fg-faint">Add description</span>
               )}
             </button>
           )}
@@ -160,9 +163,9 @@ export function RoutineDetailPage() {
               type="button"
               onClick={handleStartSession}
               disabled={!canStart}
-              className="flex items-center gap-1 rounded-full bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+              className="flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover disabled:bg-surface-3 disabled:text-fg-faint"
             >
-              <Play className="h-4 w-4" />
+              <Play className="h-4 w-4" strokeWidth={2.5} />
               Start
             </button>
             <MeatballMenu
@@ -203,7 +206,7 @@ export function RoutineDetailPage() {
       <button
         type="button"
         onClick={() => setPickerOpen(true)}
-        className="flex items-center justify-center gap-1 rounded-xl border-2 border-dashed border-gray-300 bg-white py-3 text-sm font-medium text-gray-700"
+        className="flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-line-strong bg-surface-1/50 py-3.5 text-sm font-medium text-fg-muted transition-colors hover:border-accent hover:bg-surface-1 hover:text-accent"
       >
         <Plus className="h-4 w-4" />
         Add exercise
@@ -213,6 +216,7 @@ export function RoutineDetailPage() {
         open={pickerOpen}
         onClose={() => setPickerOpen(false)}
         onSelect={handleAddExercise}
+        maxWidth="md:max-w-3xl"
       />
 
       <ConfirmDialog

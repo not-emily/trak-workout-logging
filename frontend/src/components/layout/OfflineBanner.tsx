@@ -7,8 +7,8 @@ export function OfflineBanner() {
   const online = useOnlineStatus();
   if (online) return null;
   return (
-    <div className="flex items-center justify-center gap-1.5 bg-yellow-100 px-4 py-1.5 text-xs font-medium text-yellow-900">
-      <CloudOff className="h-3.5 w-3.5" />
+    <div className="flex items-center justify-center gap-1.5 border-b border-amber-400/20 bg-amber-500/[0.08] px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-amber-300">
+      <CloudOff className="h-3.5 w-3.5" strokeWidth={2.5} />
       Offline — your logs are safe
     </div>
   );

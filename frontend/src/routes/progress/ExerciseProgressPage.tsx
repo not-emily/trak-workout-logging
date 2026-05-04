@@ -9,6 +9,19 @@ import { LineChart } from "@/components/charts/LineChart";
 import { MetricTabs, defaultMetric, type Metric } from "@/components/progress/MetricTabs";
 import { PRCardList } from "@/components/progress/PRCard";
 import { formatDuration } from "@/lib/time";
+import type { ExerciseKind } from "@/types/exercise";
+
+const KIND_DOT_BG: Record<ExerciseKind, string> = {
+  strength: "bg-strength",
+  cardio: "bg-cardio",
+  bodyweight: "bg-bodyweight",
+};
+
+const KIND_COLOR: Record<ExerciseKind, string> = {
+  strength: "var(--color-strength)",
+  cardio: "var(--color-cardio)",
+  bodyweight: "var(--color-bodyweight)",
+};
 
 export function ExerciseProgressPage() {
   const { id } = useParams<{ id: string }>();
@@ -25,34 +38,50 @@ export function ExerciseProgressPage() {
   if (!exercise) {
     return (
       <div className="mx-auto max-w-3xl px-4 pt-6 pb-8">
-        <p className="text-sm text-gray-500">Exercise not found.</p>
+        <p className="text-sm text-fg-muted">Exercise not found.</p>
       </div>
     );
   }
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pt-6 pb-8">
-      <Link to="/progress" className="flex items-center gap-1 text-sm text-gray-600">
-        <ArrowLeft className="h-4 w-4" />
+      <Link
+        to="/progress"
+        className="flex w-fit items-center gap-1 text-xs font-semibold uppercase tracking-[0.18em] text-fg-subtle transition-colors hover:text-fg-muted"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
         Back
       </Link>
 
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold text-gray-900">{exercise.name}</h1>
-        <span className="text-xs uppercase tracking-wide text-gray-500">{exercise.kind}</span>
+      <header className="flex items-center gap-2.5">
+        <span
+          aria-hidden
+          className={`h-2 w-2 shrink-0 rounded-full ${KIND_DOT_BG[exercise.kind]}`}
+        />
+        <div className="flex min-w-0 flex-col">
+          <h1 className="truncate font-display text-3xl leading-none text-fg-soft">
+            {exercise.name}
+          </h1>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-fg-subtle">
+            {exercise.kind}
+          </span>
+        </div>
       </header>
 
       <MetricTabs kind={exercise.kind} value={metric} onChange={setMetric} />
 
-      <div className="rounded-xl bg-white p-3 ring-1 ring-gray-200">
+      <div className="rounded-xl border border-line bg-surface-1 p-3">
         <LineChart
           data={points}
           yFormatter={yFormatterFor(metric)}
+          color={KIND_COLOR[exercise.kind]}
         />
       </div>
 
-      <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-gray-700">Personal records</h2>
+      <section className="mt-2 flex flex-col gap-3">
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-fg-subtle">
+          Personal records
+        </h2>
         <PRCardList prs={prs} />
       </section>
     </div>
@@ -74,7 +103,6 @@ function yFormatterFor(metric: Metric): (n: number) => string {
     case "duration":
       return (n) => formatDuration(Math.round(n));
     case "pace":
-      // sec/m → display as min/km
       return (n) => `${formatDuration(Math.round(n * 1000))}/km`;
   }
 }

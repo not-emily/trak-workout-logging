@@ -13,6 +13,12 @@ type Props = {
   exercise: Exercise;
 };
 
+const KIND_DOT_BG: Record<Exercise["kind"], string> = {
+  strength: "bg-strength",
+  cardio: "bg-cardio",
+  bodyweight: "bg-bodyweight",
+};
+
 export function RoutineExerciseBlock({ routineExercise, exercise }: Props) {
   const [confirmRemove, setConfirmRemove] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -29,7 +35,7 @@ export function RoutineExerciseBlock({ routineExercise, exercise }: Props) {
     <section
       ref={setNodeRef}
       style={style}
-      className="flex flex-col gap-2 rounded-xl bg-white p-3 ring-1 ring-gray-200"
+      className="flex flex-col gap-2 rounded-xl border border-line bg-surface-1 p-3"
     >
       <header className="flex items-center justify-between gap-2">
         <button
@@ -40,16 +46,20 @@ export function RoutineExerciseBlock({ routineExercise, exercise }: Props) {
           // touch-action: none lets dnd-kit's TouchSensor own the gesture so
           // the browser doesn't pan the page on drag in mobile/emulated mode.
           style={{ touchAction: "none" }}
-          className="flex h-7 w-7 shrink-0 cursor-grab items-center justify-center rounded-md text-gray-400 hover:text-gray-600 active:cursor-grabbing"
+          className="flex h-7 w-7 shrink-0 cursor-grab items-center justify-center rounded-md text-fg-faint transition-colors hover:bg-surface-2 hover:text-fg-muted active:cursor-grabbing"
         >
           <GripVertical className="h-4 w-4" />
         </button>
-        <h3 className="flex-1 font-medium text-gray-900">{exercise.name}</h3>
+        <span
+          aria-hidden
+          className={`h-1.5 w-1.5 shrink-0 rounded-full ${KIND_DOT_BG[exercise.kind]}`}
+        />
+        <h3 className="flex-1 truncate font-display text-base text-fg-soft">{exercise.name}</h3>
         <button
           type="button"
           onClick={() => setConfirmRemove(true)}
           aria-label={`Remove ${exercise.name}`}
-          className="flex h-7 w-7 items-center justify-center rounded-full text-gray-400 hover:text-red-500"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-fg-faint transition-colors hover:bg-danger-soft hover:text-danger"
         >
           <X className="h-4 w-4" />
         </button>

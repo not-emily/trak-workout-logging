@@ -18,7 +18,6 @@ export function PlannedSetsEditor({ routineExercise, exerciseKind }: Props) {
   const [editing, setEditing] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
-  // If the underlying record changes (e.g. drag reorder), reseed local state.
   useEffect(() => {
     setSets(routineExercise.plannedSets.toString());
     setReps(routineExercise.plannedReps?.toString() ?? "");
@@ -55,7 +54,6 @@ export function PlannedSetsEditor({ routineExercise, exerciseKind }: Props) {
     setEditing(false);
   }
 
-  // Tap outside the editor commits + collapses.
   useEffect(() => {
     if (!editing) return;
     function handler(e: MouseEvent) {
@@ -80,25 +78,23 @@ export function PlannedSetsEditor({ routineExercise, exerciseKind }: Props) {
       <button
         type="button"
         onClick={() => setEditing(true)}
-        className="flex items-center justify-between gap-2 rounded-md bg-gray-50 px-2 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-100"
+        className="flex items-center justify-between gap-2 rounded-md bg-surface-2/40 px-2.5 py-1.5 text-left transition-colors hover:bg-surface-2"
       >
-        <span>
-          <PlannedReadout
-            kind={exerciseKind}
-            sets={sets}
-            reps={reps}
-            weight={weight}
-            duration={duration}
-            distance={distance}
-          />
-        </span>
-        <Pencil className="h-3.5 w-3.5 shrink-0 text-gray-400" />
+        <PlannedReadout
+          kind={exerciseKind}
+          sets={sets}
+          reps={reps}
+          weight={weight}
+          duration={duration}
+          distance={distance}
+        />
+        <Pencil className="h-3.5 w-3.5 shrink-0 text-fg-faint" />
       </button>
     );
   }
 
   return (
-    <div ref={wrapRef} className="rounded-md bg-white p-2 ring-2 ring-black">
+    <div ref={wrapRef} className="rounded-md bg-surface-2 p-2.5 ring-2 ring-accent">
       <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
         <Field
           label="Sets"
@@ -157,7 +153,7 @@ export function PlannedSetsEditor({ routineExercise, exerciseKind }: Props) {
         <button
           type="button"
           onClick={commitAndCollapse}
-          className="rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white"
+          className="rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-fg"
         >
           Done
         </button>
@@ -174,33 +170,44 @@ function PlannedReadout(props: {
   duration: string;
   distance: string;
 }) {
-  const setsLabel = `${props.sets || "—"} ${props.sets === "1" ? "set" : "sets"}`;
   const dash = "—";
+  const num = (v: string, missing = false) => (
+    <span
+      className={`font-mono font-medium tabular-nums ${missing ? "text-fg-faint" : "text-fg"}`}
+    >
+      {v}
+    </span>
+  );
+  const label = (text: string) => <span className="text-fg-muted">{text}</span>;
+  const sep = (text: string) => <span className="px-1.5 text-fg-faint">{text}</span>;
+
   if (props.kind === "strength") {
     return (
-      <span>
-        <strong className="font-semibold text-gray-900">{setsLabel}</strong>
-        <span className="px-2 text-gray-400">×</span>
-        <strong className="font-semibold text-gray-900">{props.reps || dash}</strong> reps @{" "}
-        <strong className="font-semibold text-gray-900">{props.weight || dash}</strong> lb
+      <span className="text-sm">
+        {num(props.sets || dash, !props.sets)} {label(props.sets === "1" ? "set" : "sets")}
+        {sep("×")}
+        {num(props.reps || dash, !props.reps)} {label("reps")}
+        {sep("@")}
+        {num(props.weight || dash, !props.weight)} {label("lb")}
       </span>
     );
   }
   if (props.kind === "bodyweight") {
     return (
-      <span>
-        <strong className="font-semibold text-gray-900">{setsLabel}</strong>
-        <span className="px-2 text-gray-400">×</span>
-        <strong className="font-semibold text-gray-900">{props.reps || dash}</strong> reps
+      <span className="text-sm">
+        {num(props.sets || dash, !props.sets)} {label(props.sets === "1" ? "set" : "sets")}
+        {sep("×")}
+        {num(props.reps || dash, !props.reps)} {label("reps")}
       </span>
     );
   }
   return (
-    <span>
-      <strong className="font-semibold text-gray-900">{setsLabel}</strong>
-      <span className="px-2 text-gray-400">·</span>
-      <strong className="font-semibold text-gray-900">{props.duration || dash}</strong>s ·{" "}
-      <strong className="font-semibold text-gray-900">{props.distance || dash}</strong> m
+    <span className="text-sm">
+      {num(props.sets || dash, !props.sets)} {label(props.sets === "1" ? "set" : "sets")}
+      {sep("·")}
+      {num(props.duration || dash, !props.duration)} {label("s")}
+      {sep("·")}
+      {num(props.distance || dash, !props.distance)} {label("m")}
     </span>
   );
 }
@@ -215,8 +222,10 @@ function Field(props: {
   autoFocus?: boolean;
 }) {
   return (
-    <label className="flex flex-col gap-0.5">
-      <span className="text-gray-500">{props.label}</span>
+    <label className="flex flex-col gap-1">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-subtle">
+        {props.label}
+      </span>
       <input
         type="text"
         inputMode={props.inputMode}
@@ -225,7 +234,7 @@ function Field(props: {
         onBlur={props.onBlur}
         onKeyDown={props.onKeyDown}
         autoFocus={props.autoFocus}
-        className="rounded-md bg-white px-2 py-1.5 text-center text-base ring-1 ring-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+        className="rounded-md border border-line-strong bg-surface-1 px-2 py-1.5 text-center font-mono text-base text-fg tabular-nums focus:border-accent focus:outline-none"
       />
     </label>
   );

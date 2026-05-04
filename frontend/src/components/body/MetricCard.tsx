@@ -10,18 +10,25 @@ export function MetricCard({ measurement }: Props) {
   return (
     <Link
       to={`/body/${measurement.metric}`}
-      className="flex items-center justify-between gap-3 rounded-xl bg-white p-3 ring-1 ring-gray-200 hover:bg-gray-50"
+      className="group flex items-center justify-between gap-3 rounded-xl border border-line bg-surface-1 p-4 transition-colors hover:border-line-strong hover:bg-surface-2"
     >
       <div className="flex flex-col">
-        <span className="text-xs font-medium uppercase tracking-wide text-gray-500">{label}</span>
-        <span className="text-lg font-semibold text-gray-900">
-          {measurement.value} <span className="text-sm font-normal text-gray-500">{measurement.unit}</span>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-fg-subtle">
+          {label}
         </span>
-        <span className="text-xs text-gray-400">
+        <span className="mt-1 flex items-baseline gap-1.5">
+          <span className="font-display text-2xl leading-none text-fg">
+            {measurement.value}
+          </span>
+          <span className="font-mono text-xs uppercase tracking-wide text-fg-muted">
+            {measurement.unit}
+          </span>
+        </span>
+        <span className="mt-1.5 text-[11px] text-fg-faint">
           {recorded.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
         </span>
       </div>
-      <ChevronRight className="h-4 w-4 text-gray-400" />
+      <ChevronRight className="h-4 w-4 text-fg-faint transition-transform group-hover:translate-x-0.5 group-hover:text-fg-muted" />
     </Link>
   );
 }

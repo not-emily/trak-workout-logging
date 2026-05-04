@@ -15,6 +15,11 @@ import {
 } from "@/types/bodyMeasurement";
 import type { GoalDirection, GoalInput, GoalTargetType } from "@/types/goal";
 
+const labelClass =
+  "flex flex-col gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-fg-subtle";
+const fieldClass =
+  "rounded-lg border border-line-strong bg-surface-2 px-3 py-2.5 text-base text-fg placeholder:text-fg-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-soft";
+
 export function GoalFormPage() {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
@@ -33,7 +38,6 @@ export function GoalFormPage() {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
 
-  // Seed from existing goal once it loads.
   useEffect(() => {
     if (!existing) return;
     setName(existing.name);
@@ -48,7 +52,6 @@ export function GoalFormPage() {
     setTargetDate(existing.targetDate ?? "");
   }, [existing]);
 
-  // Auto-default unit when target type or body metric changes (only on new).
   useEffect(() => {
     if (!isNew || !targetType) return;
     if (targetType === "lift") setUnit("lb");
@@ -93,20 +96,25 @@ export function GoalFormPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-4 px-4 pt-6 pb-8">
-      <Link to="/goals" className="flex items-center gap-1 text-sm text-gray-600">
-        <ArrowLeft className="h-4 w-4" />
+    <div className="mx-auto flex max-w-2xl flex-col gap-5 px-4 pt-6 pb-8">
+      <Link
+        to="/goals"
+        className="flex w-fit items-center gap-1 text-xs font-semibold uppercase tracking-[0.18em] text-fg-subtle transition-colors hover:text-fg-muted"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
         Back
       </Link>
 
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{isNew ? "New goal" : "Edit goal"}</h1>
+        <h1 className="font-display text-3xl leading-none text-fg">
+          {isNew ? "New goal" : "Edit goal"}
+        </h1>
         {!isNew && (
           <button
             type="button"
             onClick={() => setConfirmDelete(true)}
             aria-label="Delete goal"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-red-50 text-red-600"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-danger-soft text-danger transition-colors hover:bg-danger hover:text-fg"
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -114,7 +122,7 @@ export function GoalFormPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <label className="flex flex-col gap-1 text-sm">
+        <label className={labelClass}>
           Name
           <input
             type="text"
@@ -122,44 +130,44 @@ export function GoalFormPage() {
             onChange={(e) => setName(e.target.value)}
             required
             placeholder="e.g. Bench 225"
-            className="rounded-lg border border-gray-300 px-3 py-2 text-base"
+            className={fieldClass + " font-sans normal-case tracking-normal"}
           />
         </label>
 
-        <div className="flex flex-col gap-1 text-sm">
+        <div className={labelClass}>
           Type
           <GoalTypePicker value={targetType} onChange={setTargetType} />
         </div>
 
         {targetType === "lift" && (
-          <div className="flex flex-col gap-1 text-sm">
+          <div className={labelClass}>
             Exercise
             <button
               type="button"
               onClick={() => setPickerOpen(true)}
-              className="flex items-center justify-between rounded-lg border border-gray-300 bg-white px-3 py-2 text-left text-base"
+              className={fieldClass + " flex items-center justify-between text-left normal-case tracking-normal"}
             >
-              <span className={selectedExercise ? "text-gray-900" : "text-gray-400"}>
+              <span className={selectedExercise ? "text-fg" : "text-fg-faint"}>
                 {selectedExercise ? selectedExercise.name : "Pick an exercise…"}
               </span>
-              <ChevronDown className="h-4 w-4 text-gray-400" />
+              <ChevronDown className="h-4 w-4 text-fg-faint" />
             </button>
-            <span className="text-xs text-gray-500">
+            <span className="text-[11px] font-normal normal-case tracking-normal text-fg-muted">
               Compared against your best estimated 1RM for this exercise.
             </span>
           </div>
         )}
 
         {targetType === "body" && (
-          <label className="flex flex-col gap-1 text-sm">
+          <label className={labelClass}>
             Body metric
             <select
               value={bodyMetric}
               onChange={(e) => setBodyMetric(e.target.value as BodyMetric)}
-              className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-base"
+              className={fieldClass + " font-sans normal-case tracking-normal"}
             >
               {BODY_METRICS.map((m) => (
-                <option key={m} value={m}>
+                <option key={m} value={m} className="bg-surface-2 text-fg">
                   {formatMetricLabel(m)}
                 </option>
               ))}
@@ -168,7 +176,7 @@ export function GoalFormPage() {
         )}
 
         {targetType && targetType !== "frequency" && (
-          <label className="flex flex-col gap-1 text-sm">
+          <div className={labelClass}>
             Direction
             <div className="flex gap-2">
               {(["increase", "decrease"] as GoalDirection[]).map((d) => {
@@ -178,10 +186,10 @@ export function GoalFormPage() {
                     key={d}
                     type="button"
                     onClick={() => setDirection(d)}
-                    className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium ring-1 ${
+                    className={`flex-1 rounded-lg border px-3 py-2.5 text-sm font-semibold normal-case tracking-normal transition-colors ${
                       active
-                        ? "bg-gray-900 text-white ring-gray-900"
-                        : "bg-white text-gray-700 ring-gray-200"
+                        ? "border-accent bg-accent-soft text-accent"
+                        : "border-line-strong bg-surface-2 text-fg-muted hover:bg-surface-3 hover:text-fg"
                     }`}
                   >
                     {d === "increase" ? "Increase to" : "Decrease to"}
@@ -189,11 +197,11 @@ export function GoalFormPage() {
                 );
               })}
             </div>
-          </label>
+          </div>
         )}
 
         <div className="flex gap-2">
-          <label className="flex flex-1 flex-col gap-1 text-sm">
+          <label className={labelClass + " flex-1"}>
             Target
             <input
               type="text"
@@ -201,28 +209,33 @@ export function GoalFormPage() {
               value={targetValue}
               onChange={(e) => setTargetValue(e.target.value)}
               required
-              className="rounded-lg border border-gray-300 px-3 py-2 text-base"
+              className={fieldClass + " font-mono normal-case tracking-normal"}
             />
           </label>
-          <label className="flex w-28 flex-col gap-1 text-sm">
+          <label className={labelClass + " w-28"}>
             Unit
             <input
               type="text"
               value={unit}
               onChange={(e) => setUnit(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-base"
+              className={fieldClass + " font-mono normal-case tracking-normal"}
             />
           </label>
         </div>
 
         {targetType !== "frequency" && (
-          <label className="flex flex-col gap-1 text-sm">
-            Target date <span className="text-gray-400">(optional)</span>
+          <label className={labelClass}>
+            <span>
+              Target date{" "}
+              <span className="font-normal normal-case tracking-normal text-fg-faint">
+                (optional)
+              </span>
+            </span>
             <input
               type="date"
               value={targetDate}
               onChange={(e) => setTargetDate(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-base"
+              className={fieldClass + " font-sans normal-case tracking-normal [color-scheme:dark]"}
             />
           </label>
         )}
@@ -235,7 +248,7 @@ export function GoalFormPage() {
             !targetValue.trim() ||
             (targetType === "lift" && !exerciseId)
           }
-          className="mt-2 rounded-lg bg-black px-4 py-2 font-medium text-white disabled:opacity-60"
+          className="mt-2 rounded-lg bg-accent px-4 py-2.5 font-semibold text-accent-fg transition-colors hover:bg-accent-hover disabled:bg-surface-3 disabled:text-fg-faint"
         >
           {isNew ? "Create goal" : "Save changes"}
         </button>
@@ -246,6 +259,7 @@ export function GoalFormPage() {
         onClose={() => setPickerOpen(false)}
         onSelect={(ex) => setExerciseId(ex.id)}
         title="Pick exercise"
+        maxWidth="md:max-w-2xl"
       />
 
       <ConfirmDialog

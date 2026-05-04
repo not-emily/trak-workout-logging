@@ -8,8 +8,8 @@ import { useSyncStatus } from "@/hooks/useSyncStatus";
 // nothing to say. Three live states:
 //
 //   failed > 0:           red, links to /settings/sync-issues
-//   pending + online:     blue with spinner ("Syncing…")
-//   pending + offline:    gray with clock ("N pending")
+//   pending + online:     cyan with spinner ("Syncing…")
+//   pending + offline:    muted with cloud-off ("N pending")
 export function SyncIndicator() {
   const online = useOnlineStatus();
   const { pendingCount, failedCount } = useSyncStatus();
@@ -18,9 +18,9 @@ export function SyncIndicator() {
     return (
       <Link
         to="/settings/sync-issues"
-        className="flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700 ring-1 ring-red-200"
+        className="flex items-center gap-1 rounded-full border border-danger/30 bg-danger-soft px-2.5 py-1 text-xs font-semibold text-danger transition-colors hover:bg-danger/20"
       >
-        <AlertCircle className="h-3 w-3" />
+        <AlertCircle className="h-3 w-3" strokeWidth={2.5} />
         {failedCount}
       </Link>
     );
@@ -29,15 +29,15 @@ export function SyncIndicator() {
   if (pendingCount > 0) {
     if (online) {
       return (
-        <span className="flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-200">
-          <RefreshCw className="h-3 w-3 animate-spin" />
+        <span className="flex items-center gap-1 rounded-full border border-cardio/30 bg-cardio-soft px-2.5 py-1 text-xs font-semibold text-cardio">
+          <RefreshCw className="h-3 w-3 animate-spin" strokeWidth={2.5} />
           Syncing… ({pendingCount})
         </span>
       );
     }
     return (
-      <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700 ring-1 ring-gray-200">
-        <CloudOff className="h-3 w-3" />
+      <span className="flex items-center gap-1 rounded-full border border-line-strong bg-surface-2 px-2.5 py-1 text-xs font-semibold text-fg-muted">
+        <CloudOff className="h-3 w-3" strokeWidth={2.5} />
         {pendingCount} pending
       </span>
     );

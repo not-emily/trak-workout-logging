@@ -53,38 +53,58 @@ export function SessionCard({ session }: Props) {
   return (
     <Link
       to={`/sessions/${session.id}`}
-      className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white p-4 transition-colors hover:bg-gray-50"
+      className={`group relative flex flex-col gap-2 overflow-hidden rounded-xl border p-4 transition-colors ${
+        isActive
+          ? "border-accent/30 bg-accent-soft/40 hover:bg-accent-soft/60"
+          : "border-line bg-surface-1 hover:bg-surface-2"
+      }`}
     >
+      {isActive && (
+        <span aria-hidden className="absolute inset-y-0 left-0 w-[3px] bg-accent" />
+      )}
+
       <div className="flex items-baseline justify-between gap-2">
-        <h3 className="text-base font-medium text-gray-900">
+        <h3 className="truncate font-display text-base text-fg-soft">
           {session.name || "Untitled session"}
         </h3>
         {isActive && (
-          <span className="shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-            In progress
+          <span className="flex shrink-0 items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-accent">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inset-0 animate-ping rounded-full bg-accent opacity-60" />
+              <span className="relative h-1.5 w-1.5 rounded-full bg-accent" />
+            </span>
+            Live
           </span>
         )}
       </div>
-      <div className="flex flex-wrap items-center gap-1.5 text-xs text-gray-500">
-        <span>{formatDate(session.startedAt)}</span>
-        {duration !== null && (
+
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-fg-muted">
+        <span className="font-mono uppercase tracking-wide">{formatDate(session.startedAt)}</span>
+        {duration !== null && duration > 0 && (
           <>
-            <span aria-hidden="true">•</span>
-            <span>{formatDuration(duration)}</span>
+            <span aria-hidden className="text-fg-faint">·</span>
+            <span className="font-mono tabular-nums">{formatDuration(duration)}</span>
           </>
         )}
-        <span aria-hidden="true">•</span>
+        <span aria-hidden className="text-fg-faint">·</span>
         <span>
-          {exerciseCount} {exerciseCount === 1 ? "exercise" : "exercises"}
+          <span className="font-mono font-medium text-fg-soft tabular-nums">{exerciseCount}</span>{" "}
+          {exerciseCount === 1 ? "exercise" : "exercises"}
         </span>
-        <span aria-hidden="true">•</span>
+        <span aria-hidden className="text-fg-faint">·</span>
         <span>
-          {setCount} {setCount === 1 ? "set" : "sets"}
+          <span className="font-mono font-medium text-fg-soft tabular-nums">{setCount}</span>{" "}
+          {setCount === 1 ? "set" : "sets"}
         </span>
         {totalVolume > 0 && (
           <>
-            <span aria-hidden="true">•</span>
-            <span>{Math.round(totalVolume).toLocaleString()} lb volume</span>
+            <span aria-hidden className="text-fg-faint">·</span>
+            <span>
+              <span className="font-mono font-medium text-fg-soft tabular-nums">
+                {Math.round(totalVolume).toLocaleString()}
+              </span>{" "}
+              lb volume
+            </span>
           </>
         )}
       </div>

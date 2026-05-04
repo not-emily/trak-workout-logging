@@ -20,9 +20,9 @@ export function UpdateBanner() {
     <button
       type="button"
       onClick={() => swUpdateStore.applyUpdate()}
-      className="flex w-full items-center justify-center gap-1.5 bg-black px-4 py-1.5 text-xs font-medium text-white"
+      className="flex w-full items-center justify-center gap-1.5 bg-accent px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-accent-fg transition-colors hover:bg-accent-hover"
     >
-      <Sparkles className="h-3.5 w-3.5" />
+      <Sparkles className="h-3.5 w-3.5" strokeWidth={2.5} />
       Update available — tap to refresh
     </button>
   );

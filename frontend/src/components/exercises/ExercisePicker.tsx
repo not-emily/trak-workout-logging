@@ -11,6 +11,14 @@ type Props = {
   onSelect: (exercise: Exercise) => void;
   title?: string;
   emptyMessage?: string;
+  /** Tailwind `md:max-w-*` to match the parent page's content width. */
+  maxWidth?: string;
+};
+
+const KIND_DOT_BG: Record<Exercise["kind"], string> = {
+  strength: "bg-strength",
+  cardio: "bg-cardio",
+  bodyweight: "bg-bodyweight",
 };
 
 export function ExercisePicker({
@@ -19,6 +27,7 @@ export function ExercisePicker({
   onSelect,
   title = "Add exercise",
   emptyMessage = "No exercises match.",
+  maxWidth,
 }: Props) {
   const { exercises } = useExercises();
   const [query, setQuery] = useState("");
@@ -30,24 +39,24 @@ export function ExercisePicker({
   }, [exercises, query]);
 
   return (
-    <BottomSheet open={open} onClose={onClose} title={title} bodyScroll={false}>
-      <div className="border-b border-gray-200 p-3">
+    <BottomSheet open={open} onClose={onClose} title={title} bodyScroll={false} maxWidth={maxWidth}>
+      <div className="border-b border-line p-3">
         <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-faint" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search…"
             autoFocus
-            className="w-full rounded-full bg-gray-100 py-2 pl-10 pr-4 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black"
+            className="w-full rounded-full border border-line-strong bg-surface-2 py-2 pl-10 pr-4 text-sm text-fg placeholder:text-fg-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-soft"
           />
         </div>
       </div>
 
       <ul className="flex-1 overflow-y-auto">
         {filtered.length === 0 && (
-          <li className="p-4 text-center text-sm text-gray-500">{emptyMessage}</li>
+          <li className="p-6 text-center text-sm text-fg-muted">{emptyMessage}</li>
         )}
         {filtered.map((exercise) => (
           <li key={exercise.id}>
@@ -57,14 +66,31 @@ export function ExercisePicker({
                 onSelect(exercise);
                 onClose();
               }}
-              className="flex w-full flex-col items-start gap-0.5 border-b border-gray-100 px-4 py-3 text-left hover:bg-gray-50"
+              className="group flex w-full items-center gap-3 border-b border-line/60 px-4 py-3 text-left transition-colors hover:bg-surface-2"
             >
-              <span className="font-medium text-gray-900">{exercise.name}</span>
-              <span className="text-xs text-gray-500">
-                <span className="capitalize">{exercise.kind}</span>
-                {exercise.equipment && ` • ${exercise.equipment}`}
-                {exercise.muscleGroups.length > 0 &&
-                  ` • ${exercise.muscleGroups.slice(0, 2).map(formatMuscleGroup).join(", ")}`}
+              <span
+                aria-hidden
+                className={`h-1.5 w-1.5 shrink-0 rounded-full ${KIND_DOT_BG[exercise.kind]}`}
+              />
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className="truncate font-display text-sm text-fg-soft">{exercise.name}</span>
+                <span className="flex items-center gap-1.5 truncate text-[10px] font-medium uppercase tracking-[0.14em] text-fg-subtle">
+                  <span>{exercise.kind}</span>
+                  {exercise.equipment && (
+                    <>
+                      <span className="text-fg-faint">·</span>
+                      <span className="normal-case tracking-normal">{exercise.equipment}</span>
+                    </>
+                  )}
+                  {exercise.muscleGroups.length > 0 && (
+                    <>
+                      <span className="text-fg-faint">·</span>
+                      <span className="normal-case tracking-normal">
+                        {exercise.muscleGroups.slice(0, 2).map(formatMuscleGroup).join(", ")}
+                      </span>
+                    </>
+                  )}
+                </span>
               </span>
             </button>
           </li>
