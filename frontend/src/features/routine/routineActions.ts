@@ -228,8 +228,9 @@ export async function hydrateRoutines(): Promise<void> {
   try {
     const body = (await apiClient.get("/api/v1/routines")) as ApiSuccess<Routine[]>;
     localStore.replace("routines", body.data);
-  } catch {
-    // offline — keep local copy
+  } catch (err) {
+    // offline — keep local copy, but don't fail silently
+    console.warn("[trak] routines hydration failed; showing cached data", err);
   }
 }
 
@@ -243,7 +244,8 @@ export async function hydrateRoutine(id: string): Promise<void> {
     for (const re of routineExercises ?? []) {
       localStore.put("routine_exercises", re);
     }
-  } catch {
-    // offline
+  } catch (err) {
+    // offline — keep local copy, but don't fail silently
+    console.warn("[trak] routine hydration failed; showing cached data", err);
   }
 }

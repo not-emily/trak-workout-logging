@@ -204,8 +204,9 @@ export async function hydrateSession(id: string): Promise<void> {
         localStore.put("sets", s as WorkoutSet);
       }
     }
-  } catch {
-    // Offline / not yet synced — just show what we have locally.
+  } catch (err) {
+    // Offline / not yet synced — show local data, but don't fail silently.
+    console.warn("[trak] session hydration failed; showing cached data", err);
   }
 }
 
@@ -213,7 +214,8 @@ export async function hydrateAllSessions(): Promise<void> {
   try {
     const body = (await apiClient.get("/api/v1/sessions")) as ApiSuccess<Session[]>;
     localStore.replace("sessions", body.data);
-  } catch {
-    // Offline — show what we have.
+  } catch (err) {
+    // Offline — show what we have, but don't fail silently.
+    console.warn("[trak] sessions hydration failed; showing cached data", err);
   }
 }

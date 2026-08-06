@@ -24,12 +24,15 @@ let lastHydrate = 0;
 async function hydrateFromServer(): Promise<void> {
   const now = Date.now();
   if (now - lastHydrate < 30_000) return;
-  lastHydrate = now;
   try {
     const body = (await apiClient.get("/api/v1/body_measurements")) as ApiSuccess<BodyMeasurement[]>;
     localStore.replace("body_measurements", body.data);
-  } catch {
-    // Offline — keep showing local data.
+    // Stamped only on success. Stamping before the request would let a
+    // transient failure consume the throttle window and pin stale data.
+    lastHydrate = Date.now();
+  } catch (err) {
+    // Offline — keep showing local data, but don't fail silently.
+    console.warn("[trak] body measurements hydration failed; showing cached data", err);
   }
 }
 

@@ -44,12 +44,15 @@ async function hydrateFromServer(): Promise<void> {
   // Throttle hydration to once every 30s to avoid hammering on remount.
   const now = Date.now();
   if (now - lastHydrate < 30_000) return;
-  lastHydrate = now;
   try {
     const body = (await apiClient.get("/api/v1/exercises")) as ApiSuccess<Exercise[]>;
     localStore.replace("exercises", body.data);
-  } catch {
-    // Offline / failed: keep showing whatever's in localStore.
+    // Stamped only on success. Stamping before the request would let a
+    // transient failure consume the throttle window and pin stale data.
+    lastHydrate = Date.now();
+  } catch (err) {
+    // Keep showing whatever's in localStore — but don't fail silently.
+    console.warn("[trak] exercises hydration failed; showing cached data", err);
   }
 }
 
