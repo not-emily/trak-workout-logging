@@ -60,28 +60,78 @@ ALLOWLIST = {
   "Front Dumbbell Raise" => "Dumbbell Front Raise",
   "Side Lateral Raise" => "Dumbbell Lateral Raise",
 
-  # ── Machine / Cable ──────────────────────────────────────────────
+  # ── Machine ──────────────────────────────────────────────────────
   "Leg Press" => nil,
   "Leg Extensions" => "Leg Extension",
   "Lying Leg Curls" => "Lying Leg Curl",
   "Seated Leg Curl" => nil,
+  "Standing Leg Curl" => nil,
   "Hack Squat" => nil,
   "Standing Calf Raises" => "Standing Calf Raise",
   "Seated Calf Raise" => nil,
+  "Calf Press On The Leg Press Machine" => "Leg Press Calf Raise",
   "Machine Shoulder (Military) Press" => "Machine Shoulder Press",
   "Machine Bench Press" => nil,
   "Butterfly" => "Pec Deck",
-  "Wide-Grip Lat Pulldown" => nil,
-  "Close-Grip Front Lat Pulldown" => "Close-Grip Lat Pulldown",
-  "Seated Cable Rows" => "Seated Cable Row",
-  "Cable Crossover" => nil,
-  "Triceps Pushdown" => "Cable Triceps Pushdown",
-  "Cable Rope Overhead Triceps Extension" => "Overhead Cable Triceps Extension",
-  "Standing Biceps Cable Curl" => "Cable Biceps Curl",
-  "Face Pull" => nil,
-  "Cable Crunch" => nil,
+  "Reverse Machine Flyes" => "Reverse Pec Deck",
+  "Leverage Chest Press" => "Seated Machine Chest Press",
+  "Leverage Incline Chest Press" => "Machine Incline Chest Press",
+  "Leverage Decline Chest Press" => "Machine Decline Chest Press",
+  "Leverage High Row" => "Machine High Row",
+  "Leverage Iso Row" => "Iso-Lateral Row Machine",
+  "Lying T-Bar Row" => "T-Bar Row",
+  "Leverage Shrug" => "Machine Shrug",
+  "Machine Bicep Curl" => nil,
+  "Machine Preacher Curls" => "Machine Preacher Curl",
+  "Machine Triceps Extension" => nil,
+  "Dip Machine" => nil,
+  "Ab Crunch Machine" => nil,
+  "Glute Ham Raise" => nil,
+  "Reverse Hyperextension" => nil,
   "Thigh Abductor" => "Hip Abductor Machine",
   "Thigh Adductor" => "Hip Adductor Machine",
+
+  # ── Smith machine ────────────────────────────────────────────────
+  "Smith Machine Squat" => nil,
+  "Smith Machine Bench Press" => nil,
+  "Smith Machine Incline Bench Press" => nil,
+  "Smith Machine Bent Over Row" => nil,
+  "Smith Machine Overhead Shoulder Press" => "Smith Machine Overhead Press",
+  "Smith Machine Stiff-Legged Deadlift" => nil,
+  "Smith Machine Calf Raise" => nil,
+
+  # ── Cable ────────────────────────────────────────────────────────
+  "Wide-Grip Lat Pulldown" => nil,
+  "Close-Grip Front Lat Pulldown" => "Close-Grip Lat Pulldown",
+  "V-Bar Pulldown" => nil,
+  "Underhand Cable Pulldowns" => "Underhand Lat Pulldown",
+  "One Arm Lat Pulldown" => "Single-Arm Lat Pulldown",
+  "Straight-Arm Pulldown" => "Straight-Arm Cable Pulldown",
+  "Seated Cable Rows" => "Seated Cable Row",
+  "Seated One-arm Cable Pulley Rows" => "Single-Arm Cable Row",
+  "Cable Crossover" => nil,
+  "Low Cable Crossover" => nil,
+  "Incline Cable Flye" => "Incline Cable Fly",
+  "Cable Chest Press" => nil,
+  "Triceps Pushdown" => "Cable Triceps Pushdown",
+  "Triceps Pushdown - Rope Attachment" => "Rope Triceps Pushdown",
+  "Reverse Grip Triceps Pushdown" => nil,
+  "Cable Rope Overhead Triceps Extension" => "Overhead Cable Triceps Extension",
+  "Standing Biceps Cable Curl" => "Cable Biceps Curl",
+  "Cable Hammer Curls - Rope Attachment" => "Cable Rope Hammer Curl",
+  "Cable Preacher Curl" => nil,
+  "Cable Shoulder Press" => nil,
+  "Standing Low-Pulley Deltoid Raise" => "Cable Lateral Raise",
+  "Cable Rear Delt Fly" => nil,
+  "Face Pull" => nil,
+  "Cable Shrugs" => "Cable Shrug",
+  "Upright Cable Row" => "Cable Upright Row",
+  "One-Legged Cable Kickback" => "Cable Glute Kickback",
+  "Pull Through" => "Cable Pull-Through",
+  "Cable Crunch" => nil,
+  "Pallof Press" => nil,
+  "Standing Cable Wood Chop" => "Cable Wood Chop",
+  "Cable Russian Twists" => "Cable Russian Twist",
 
   # ── Bodyweight ───────────────────────────────────────────────────
   "Pushups" => "Push-Up",
@@ -99,6 +149,8 @@ ALLOWLIST = {
   "Incline Push-Up Close-Grip" => "Close-Grip Push-Up",
   "Reverse Crunch" => nil,
   "Side Bridge" => "Side Plank",
+  "Russian Twist" => nil,
+  "Oblique Crunches" => "Oblique Crunch",
 
   # ── Cardio ───────────────────────────────────────────────────────
   "Running, Treadmill" => "Running",
@@ -111,6 +163,32 @@ ALLOWLIST = {
   "Rope Jumping" => "Jump Rope",
   "Stairmaster" => nil,
 }.freeze
+
+# Real gym equipment that free-exercise-db simply doesn't have an entry for.
+# Hand-written directly in trak's schema and merged into the output.
+#
+# `seed_slug` MUST be prefixed `trak_` — source slugs come from the upstream
+# `id` field, so the prefix guarantees these can never collide with one (and
+# never get clobbered if upstream later adds the same exercise under its own id).
+#
+# Add to this list rather than editing the generated JSON — the JSON is
+# overwritten on every run of this script.
+EXTRAS = [
+  {
+    seed_slug: "trak_rotary_torso_machine",
+    name: "Rotary Torso Machine",
+    kind: "strength",
+    muscle_groups: ["abdominals"],
+    equipment: "machine",
+    level: "beginner",
+    instructions: [
+      "Sit upright in the machine with your feet flat on the platform and your thighs secured under the pads. Set the seat so your torso starts square to the weight stack.",
+      "Grip the handles and brace your core. Keep your hips and legs locked in place — the rotation comes from your trunk, not your lower body.",
+      "Exhale and rotate your torso smoothly to one side as far as your range of motion comfortably allows. Pause briefly at the end of the movement.",
+      "Inhale and return under control to the starting position. Complete all reps on one side, then reset the machine for the other side.",
+    ].join("\n"),
+  },
+].freeze
 
 # Map source category + equipment → trak's kind
 def infer_kind(source)
@@ -166,6 +244,14 @@ if missing.any?
   warn "⚠ #{missing.size} allowlisted names not found in source:"
   missing.each { |n| warn "    #{n}" }
 end
+
+selected.concat(EXTRAS)
+puts "  + #{EXTRAS.size} hand-written extras"
+
+# A duplicate seed_slug would make seeding non-deterministic — the last
+# write for that slug wins. Fail loudly instead.
+dupes = selected.group_by { |e| e[:seed_slug] }.select { |_, v| v.size > 1 }.keys
+abort "✗ Duplicate seed_slug(s): #{dupes.join(', ')}" if dupes.any?
 
 # Sort by kind, then name — keeps the committed file diff-friendly
 selected.sort_by! { |e| [e[:kind], e[:name]] }

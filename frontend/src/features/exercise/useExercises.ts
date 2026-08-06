@@ -9,13 +9,25 @@ import type { Exercise, ExerciseInput } from "@/types/exercise";
 type ExerciseFilters = {
   kind?: string;
   muscleGroup?: string;
+  equipment?: string;
 };
 
 function applyFilters(exercises: Exercise[], filters: ExerciseFilters): Exercise[] {
   let result = exercises;
   if (filters.kind) result = result.filter((e) => e.kind === filters.kind);
   if (filters.muscleGroup) result = result.filter((e) => e.muscleGroups.includes(filters.muscleGroup!));
+  if (filters.equipment) result = result.filter((e) => e.equipment === filters.equipment);
   return result.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// Derived from the data, not a fixed list — custom exercises take free-text
+// equipment, so anything hardcoded would silently drop them from the filter.
+function distinctEquipment(exercises: Exercise[]): string[] {
+  const seen = new Set<string>();
+  for (const e of exercises) {
+    if (e.equipment) seen.add(e.equipment);
+  }
+  return [...seen].sort((a, b) => a.localeCompare(b));
 }
 
 function subscribeToExercises(cb: () => void): () => void {
@@ -50,6 +62,9 @@ export function useExercises(filters: ExerciseFilters = {}) {
 
   return {
     exercises: applyFilters(exercises, filters),
+    // Options come off the unfiltered set so the dropdown doesn't shrink out
+    // from under the current selection as other filters change.
+    equipmentOptions: distinctEquipment(exercises),
     refetch: () => {
       lastHydrate = 0;
       return hydrateFromServer();

@@ -5,6 +5,7 @@ import { useExercises } from "@/features/exercise/useExercises";
 import { ExerciseCard } from "@/components/exercises/ExerciseCard";
 import { KindFilter } from "@/components/exercises/KindFilter";
 import { MuscleGroupFilter } from "@/components/exercises/MuscleGroupFilter";
+import { EquipmentFilter } from "@/components/exercises/EquipmentFilter";
 import { SyncIndicator } from "@/components/layout/SyncIndicator";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { ExerciseKind } from "@/types/exercise";
@@ -13,11 +14,13 @@ import type { MuscleGroup } from "@/lib/muscleGroups";
 export function ExerciseListPage() {
   const [kind, setKind] = useState<ExerciseKind | null>(null);
   const [muscleGroup, setMuscleGroup] = useState<MuscleGroup | null>(null);
+  const [equipment, setEquipment] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
-  const { exercises } = useExercises({
+  const { exercises, equipmentOptions } = useExercises({
     kind: kind ?? undefined,
     muscleGroup: muscleGroup ?? undefined,
+    equipment: equipment ?? undefined,
   });
 
   const filtered = useMemo(() => {
@@ -54,11 +57,18 @@ export function ExerciseListPage() {
       </div>
 
       <KindFilter value={kind} onChange={setKind} />
-      <MuscleGroupFilter value={muscleGroup} onChange={setMuscleGroup} />
+      <div className="flex flex-wrap gap-2">
+        <MuscleGroupFilter value={muscleGroup} onChange={setMuscleGroup} />
+        <EquipmentFilter value={equipment} options={equipmentOptions} onChange={setEquipment} />
+      </div>
 
       {filtered.length === 0 && (
         <EmptyState icon={query ? Search : Dumbbell}>
-          {query ? "No exercises match your search." : "No exercises yet — they'll appear shortly."}
+          {query
+            ? "No exercises match your search."
+            : kind || muscleGroup || equipment
+              ? "No exercises match these filters."
+              : "No exercises yet — they'll appear shortly."}
         </EmptyState>
       )}
 
