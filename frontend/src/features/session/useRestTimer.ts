@@ -4,7 +4,7 @@ type RestTimerState = {
   running: boolean;
   remainingSeconds: number;
   totalSeconds: number;
-  isExapnded: boolean;
+  isExpanded: boolean;
 };
 
 export function useRestTimer(defaultSeconds = 90) {
