@@ -358,7 +358,6 @@ export function ActiveSessionPage() {
             onAdjust={(delta) =>
               restTimer.start(Math.max(1, restTimer.remainingSeconds + delta))
             }
-            onCancel={restTimer.stop}
             isExpanded={false}
           />
         )}

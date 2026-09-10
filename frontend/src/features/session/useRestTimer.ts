@@ -37,7 +37,7 @@ export function useRestTimer(defaultSeconds = 90) {
   function start(seconds: number = defaultSeconds) {
     if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = window.setInterval(tick, 1000);
-    setState({ running: true, remainingSeconds: seconds, totalSeconds: seconds });
+    setState({ running: true, remainingSeconds: seconds, totalSeconds: seconds, isExpanded: false });
   }
 
   function stop() {
