@@ -11,6 +11,7 @@ export function useRestTimer(defaultSeconds = 90) {
     running: false,
     remainingSeconds: 0,
     totalSeconds: defaultSeconds,
+    isExpanded: false,
   });
   const intervalRef = useRef<number | null>(null);
 
