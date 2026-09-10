@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { X, Plus, Minus } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
 import { formatDuration } from "@/lib/time";
 
 import { useState, useEffect } from 'react';
@@ -9,11 +9,10 @@ type Props = {
   remainingSeconds: number;
   totalSeconds: number;
   onAdjust: (deltaSeconds: number) => void;
-  onCancel: () => void;
   isExpanded: boolean;
 };
 
-export function RestTimerBar({ remainingSeconds, totalSeconds, onAdjust, onCancel, isExpanded }: Props) {
+export function RestTimerBar({ remainingSeconds, totalSeconds, onAdjust, isExpanded }: Props) {
   const progress = totalSeconds === 0 ? 0 : (totalSeconds - remainingSeconds) / totalSeconds;
   const [expanded, setExpanded] = useState(isExpanded)
 
